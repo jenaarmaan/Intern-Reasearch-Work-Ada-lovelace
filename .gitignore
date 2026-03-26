@@ -1,0 +1,15 @@
+ # User Requested Ignored Directories
+files (5)/
+
+# Python related
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+
+# OS related
+.DS_Store
+Thumbs.db
