@@ -17,13 +17,13 @@ add_path("Assignment_2")
 from avatar import render_ai_avatar
 from theory_docs import run_theoretical_info, run_project_docs
 
-# Unified Navigation Hub - Direct imports for modules
+# Direct submodule imports
 import Assignment_1.app_module as a1
 import Assignment_2.app_module as a2
 
 # --- Page Config ---
 st.set_page_config(
-    page_title="AI MISSION CONTROL v3.0",
+    page_title="AI MISSION CONTROL v3.1",
     page_icon="⚛️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -42,27 +42,29 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- Navigation ---
+# --- Navigation Architecture ---
 with st.sidebar:
-    st.markdown("<h1 style='color:#00e5ff; margin-bottom:0;'>ADA LOVELACE</h1><p style='font-size:0.6rem; letter-spacing:4px; opacity:0.5;'>UNIFIED RESEARCH OS</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#00e5ff; margin-bottom:0;'>ADA LOVELACE</h1><p style='font-size:0.6rem; letter-spacing:4px; opacity:0.5;'>RESEARCH Hub OS v3.1</p>", unsafe_allow_html=True)
     st.markdown("---")
     
     st.markdown("### 🧭 NAVIGATION NEXUS")
-    nav = st.radio("Access Level", ["BEE DASHBOARD (A2)", "PORTFOLIO OPTIMIZER (A1)", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
+    # Swapped labels to match user A2 priority
+    nav = st.radio("Access Level", ["TECHNICAL REPORT (A1)", "QUANTUM OPTIMIZER (A2)", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
     
     st.markdown("---")
     st.write("**📡 CONNECTION:** 🟢 STABLE")
     st.write("**🧠 SYSTEM CORE:** QGA.V3-PRO")
 
-# --- Header ---
+# --- Persistent AI Avatar Header ---
 st.markdown("<div style='text-align:right;'><span class='status-capsule'>SATELLITE ACTIVE :: L-PK :: 0.4ms</span></div>", unsafe_allow_html=True)
 
-# Avatar persistence
+# Persistent Avatar Area
 avatar_col1, avatar_col2 = st.columns([1, 2.5])
 with avatar_col1:
+    # Avatar Status determined by page
     status_map = {
-        "BEE DASHBOARD (A2)": ("BEE V3.0 initializing... Ready for strategy.", "idle"),
-        "PORTFOLIO OPTIMIZER (A1)": ("Portfolio Optimizer Alpha is online. Select your assets.", "idle"),
+        "TECHNICAL REPORT (A1)": ("Reading Project Guidelines. Analytical Mode Active.", "idle"),
+        "QUANTUM OPTIMIZER (A2)": ("BEE V3.0 initializing... Optimization sequences ready.", "idle"),
         "THEORETICAL CONCEPTS": ("Displaying Quantum GA theoretical structures.", "idle"),
         "PROJECT DOCUMENTATION": ("Analyzing Project Metadata. Guidelines extracted.", "idle")
     }
@@ -74,15 +76,15 @@ with avatar_col2:
 
 st.markdown("---")
 
-# --- Page Selection ---
-if nav == "PORTFOLIO OPTIMIZER (A1)":
+# --- Content Injection Hub ---
+if nav == "TECHNICAL REPORT (A1)":
     a1.run_assignment_1()
-elif nav == "BEE DASHBOARD (A2)":
+elif nav == "QUANTUM OPTIMIZER (A2)":
     a2.run_assignment_2()
 elif nav == "THEORETICAL CONCEPTS":
     run_theoretical_info()
 elif nav == "PROJECT DOCUMENTATION":
     run_project_docs()
 
-# --- Footer ---
+# --- Global Footer ---
 st.markdown("<br><br><br><div style='text-align:center; font-size:0.7rem; color:gray; border-top:1px solid rgba(255,255,255,0.05); padding-top:20px;'>ADA LOVELACE RESEARCH INSTITUTE | UNIFIED MISSION CONTROL | V3.2.1-NEXUS</div>", unsafe_allow_html=True)
