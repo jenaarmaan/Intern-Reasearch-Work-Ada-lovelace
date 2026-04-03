@@ -1,0 +1,98 @@
+/* MNC-Level World's Best AI Avatar Core Styling - V2.0 */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@300;400;700&family=JetBrains+Mono&display=swap');
+
+:root {
+    --neon-blue: #00e5ff;
+    --neon-purple: #ab47bc;
+    --neon-green: #00ff41;
+}
+
+/* 3D Glassmorphism Container */
+.avatar-container {
+    background: rgba(9, 10, 18, 0.7);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
+    padding: 30px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Status-Based Transitions */
+.avatar-container.status-idle { border-color: var(--neon-blue); box-shadow: 0 0 30px rgba(0, 229, 255, 0.2); }
+.avatar-container.status-processing { border-color: var(--neon-purple); box-shadow: 0 0 50px rgba(171, 71, 188, 0.4); }
+.avatar-container.status-success { border-color: var(--neon-green); box-shadow: 0 0 50px rgba(0, 255, 65, 0.4); }
+
+/* The Floating Orb */
+.avatar-orb {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    animation: floating-advanced 6s ease-in-out infinite;
+}
+
+.avatar-orb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.3));
+}
+
+/* Kinetic Typewriter Logic */
+.ai-speech-bubble {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.typewriter {
+    overflow: hidden;
+    border-right: 2px solid var(--neon-blue);
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: 1px;
+    animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+/* Advanced Animations */
+@keyframes floating-advanced {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--neon-blue); }
+}
+
+/* Scan Line Beam */
+.avatar-orb::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: var(--neon-blue);
+    opacity: 0.5;
+    box-shadow: 0 0 15px var(--neon-blue);
+    animation: scan-beam 4s linear infinite;
+}
+
+@keyframes scan-beam {
+    0% { top: 0%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}

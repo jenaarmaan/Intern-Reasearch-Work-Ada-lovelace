@@ -15,6 +15,14 @@ except ImportError:
     sys.path.append(os.path.abspath("Shared_Core"))
     from qga_engine import PortfolioOptimizer, QGAEngine, ClassicalGA, ClassicalPSO, ClassicalDE
 
+# --- 0.1 AI Avatar Integration ---
+sys.path.append(os.path.abspath("../Shared_AI_Avatar"))
+try:
+    from avatar import render_ai_avatar
+except ImportError:
+    sys.path.append(os.path.abspath("Shared_AI_Avatar"))
+    from avatar import render_ai_avatar
+
 # --- 1. Page Configuration (The Billion-Dollar Look) ---
 st.set_page_config(
     page_title="BEE 3.0 | Quantum Mission Control",
@@ -174,22 +182,33 @@ with col1:
 with col2:
     st.markdown("### 🤖 BEE INTELLIGENCE CORE")
     
-    # Large Animated Avatar Frame
-    st.markdown("<div class='avatar-frame'>", unsafe_allow_html=True)
-    avatar_path = "assets/avatar.png"
-    if os.path.exists(avatar_path):
-        st.image(avatar_path, use_column_width=True)
+    # AI Avatar Container (State-Aware)
+    avatar_placeholder = st.empty()
+    if 'opt_done' not in st.session_state:
+        status_msg = "BEE Intelligence Core Online."
+        status_mode = "idle"
+    elif st.session_state.opt_done:
+        status_msg = "Market Optimization Successful."
+        status_mode = "success"
     else:
-        st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N2NncwZ3JtcmN0Ym15bm15bm15bm15bm15bm15bm1/l0HlRnAWXjnBYQV7W/giphy.gif", caption="BEE Core Offline...")
-    st.markdown("</div>", unsafe_allow_html=True)
+        status_msg = "Performing Strategic Convergence..."
+        status_mode = "processing"
+    
+    with avatar_placeholder:
+        render_ai_avatar(context="Assignment 2", message=status_msg, status=status_mode)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Initialize Command with Premium Styling
     if st.button("🌟 INITIATE STRATEGIC QUANTUM OPTIMIZATION"):
+        st.session_state.opt_done = False
         st.balloons()
         
-        # Calling back to Shared_Core Engine
+        # Real-time Avatar Shift to Processing
+        with avatar_placeholder:
+            render_ai_avatar(context="Assignment 2", message="Performing Multi-Swarm Convergence...", status="processing")
+        
+        # Execution of Logic
         n_assets = 25
         np.random.seed(42)
         returns = np.random.uniform(0.05, 0.30, n_assets)
@@ -198,12 +217,16 @@ with col2:
         optimizer = PortfolioOptimizer(n_assets, returns, risks)
         qga = QGAEngine(optimizer, pop_size=40, max_gen=60)
         
-        with st.status("Performing Satellite Handshake with Quantum Server...", expanded=True) as status:
-            st.write("Initializing Qubits...")
+        with st.status("Performing Satellite Handshake...", expanded=True) as status:
             time.sleep(1)
-            st.write("Calculating Multi- Swarm Convergence...")
             best_ind, best_fit, history = qga.run(risk_aversion=0.5)
-            status.update(label="Strategic Optimization Successful", state="complete", expanded=False)
+            status.update(label="Optimization Complete", state="complete")
+
+        st.session_state.opt_done = True
+        
+        # Real-time Avatar Shift to Success
+        with avatar_placeholder:
+            render_ai_avatar(context="Assignment 2", message="Optimization Complete. Portfolio Ready.", status="success")
 
         # Plotly for Billion-Dollar Charts
         fig = go.Figure()

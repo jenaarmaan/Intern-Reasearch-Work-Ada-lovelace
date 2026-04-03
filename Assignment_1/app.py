@@ -13,6 +13,14 @@ try:
 except ImportError:
     sys.path.append(os.path.abspath("Shared_Core"))
     from qga_engine import PortfolioOptimizer, QGAEngine, ClassicalGA, ClassicalPSO, ClassicalDE
+
+# --- AI Avatar Integration ---
+sys.path.append(os.path.abspath("../Shared_AI_Avatar"))
+try:
+    from avatar import render_ai_avatar
+except ImportError:
+    sys.path.append(os.path.abspath("Shared_AI_Avatar"))
+    from avatar import render_ai_avatar
 from qiskit import QuantumCircuit
 
 # --- Page Config & Aesthetics ---
@@ -45,8 +53,11 @@ with st.sidebar:
     pop_size = st.number_input("Population Size", 10, 100, 30)
     generations = st.number_input("Generations", 10, 200, 50)
     
-    st.markdown("---")
     st.info("QGA uses Quantum Rotation Gates to evolve the population, often showing faster convergence than classical GA.")
+    
+    st.markdown("---")
+    # Centered Minimalist Avatar for Assignment 1
+    render_ai_avatar(context="Assignment 1", message="Ready to find alpha.", status="idle")
 
 # --- Data Generation (Mock) ---
 np.random.seed(42)
