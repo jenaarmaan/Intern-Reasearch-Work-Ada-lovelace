@@ -27,7 +27,7 @@ def render_ai_avatar(context="General Research", message="Status nominal.", stat
     # Injection: Loading Elite Design System
     css_path = os.path.join(os.path.dirname(__file__), "style.css")
     if os.path.exists(css_path):
-        with open(css_path) as f:
+        with open(css_path, encoding="utf-8") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     
     # Resource: High-res avatar asset (Cached)
@@ -46,14 +46,15 @@ def render_ai_avatar(context="General Research", message="Status nominal.", stat
     # ELITE STRUCTURAL RENDER (Zero Whitespace)
     st.markdown(f"""<div class="avatar-container {status_class}">
 <div class="avatar-orb">
+<div class="orb-pulse"></div>
 {img_html}
 </div>
 <div class="ai-speech-bubble">
-<p style="font-size:0.6rem; color:var(--neon-blue); font-family:'JetBrains Mono'; margin-bottom:10px; opacity:0.6;">
+<p style="font-size:0.6rem; color:var(--neon-blue); font-family:'JetBrains Mono'; margin-bottom:12px; opacity:0.6;">
 >> KALI_OS::{context.upper()} // STATUS::{status.upper()}
 </p>
-<div class="typewriter">
-<p>{message}</p>
+<div class="typewriter-content">
+<span class="kinetic-reveal">{message}</span> <span class="caret-pulse"></span>
 </div>
 </div>
 <div style="display: flex; justify-content: center; gap: 8px; margin-top: 25px;">

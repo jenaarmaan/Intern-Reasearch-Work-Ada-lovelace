@@ -41,7 +41,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Styling ---
+# --- Google-Level Global Styling ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -54,41 +54,46 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- Navigation Architecture ---
+# --- Navigation Nexus ---
 with st.sidebar:
     st.markdown("<h1 style='color:#00f2ff; font-size: 2.5rem; text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);'>KALI</h1><p style='font-size:0.4rem; letter-spacing:3px; opacity:0.7; font-weight:700;'>KINETIC AGENTIC LEARNING INTELLIGENCE</p>", unsafe_allow_html=True)
     st.markdown("---")
     
     st.markdown("### 🧬 SYSTEM NODES")
-    nav = st.radio("Access Level", ["KALI AVATAR CORE", "PORTFOLIO OPTIMIZER (A2)", "TECHNICAL REPORT (A1)", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
+    nav = st.radio("Access Level", ["PORTFOLIO OPTIMIZER (A2)", "TECHNICAL REPORT (A1)", "KALI AVATAR CORE", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
+    st.markdown("---")
+    st.info("KALI OS Status: **NOMINAL**")
 
-# --- Header Section ---
-st.markdown("<div style='text-align:right;'><span class='status-capsule'>KALI NEXUS :: QUANTUM LINK ESTABLISHED</span></div>", unsafe_allow_html=True)
+# --- Persistent Persistence Layer (Header Section) ---
+st.markdown("<div style='text-align:right;'><span class='status-capsule'>KALI NEXUS SYNC :: ONLINE [L-PK]</span></div>", unsafe_allow_html=True)
+
 header_col1, header_col2 = st.columns([1.2, 2.8])
 
 with header_col1:
+    # Feature 2.1 & 2.2: Context-Aware Personality Map
     status_map = {
-        "KALI AVATAR CORE": ("Initializing KALI's internal diagnostic report. Accessing Neural Schematics...", "idle"),
-        "TECHNICAL REPORT (A1)": ("Reading Project Guidelines. Analytical Mode Active.", "idle"),
-        "PORTFOLIO OPTIMIZER (A2)": ("BEE CORE initializing... Optimization sequences ready.", "idle"),
-        "THEORETICAL CONCEPTS": ("Knowledge Extraction Active. Analyzing Qubits.", "idle"),
-        "PROJECT DOCUMENTATION": ("System Metadata Extracted. Accessing Guidelines.", "idle")
+        "PORTFOLIO OPTIMIZER (A2)": ("Accessing Quantum V3 Core. KALI stands ready for global stock optimization. [Ry-Gate Rotation Protocol Active]", "idle"),
+        "TECHNICAL REPORT (A1)": ("KALI is analyzing the Agent Architecture Research nodes. Parsing PEAS Framework and PE-bench datasets...", "idle"),
+        "KALI AVATAR CORE": ("Initializing KALI's internal diagnostic report. Accessing Cognitive Neural Schematics V4.1...", "idle"),
+        "THEORETICAL CONCEPTS": ("Knowledge Extraction Unit Active. KALI is synthesizing Quantum theoretical structures for display.", "idle"),
+        "PROJECT DOCUMENTATION": ("Extracting KALI Deployment Metadata. Guidelines and mission constraints verified.", "idle")
     }
     msg, stat = status_map[nav]
     render_ai_avatar(context=nav.split()[-1], message=msg, status=stat)
 
 with header_col2:
-    st.markdown(f"<div style='margin-top:0px;'><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Global Research Environment v3.1</p></div>", unsafe_allow_html=True)
+    # Feature 2.3 & 2.4: Google-Tier Geometric Branding
+    st.markdown(f"<div style='margin-top:0px;'><p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V3.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Research Portal :: KALI AI OS</p></div>", unsafe_allow_html=True)
 
 st.markdown("<hr style='border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;'>")
 
-# --- Content Injection Hub ---
-if nav == "KALI AVATAR CORE":
-    run_avatar_specs()
+# --- Content Hub ---
+if nav == "TECHNICAL REPORT (A1)":
+    a1.run_assignment_1()
 elif nav == "PORTFOLIO OPTIMIZER (A2)":
     a2.run_assignment_2()
-elif nav == "TECHNICAL REPORT (A1)":
-    a1.run_assignment_1()
+elif nav == "KALI AVATAR CORE":
+    run_avatar_specs()
 elif nav == "THEORETICAL CONCEPTS":
     run_theoretical_info()
 elif nav == "PROJECT DOCUMENTATION":

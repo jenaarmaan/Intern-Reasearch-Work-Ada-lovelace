@@ -52,7 +52,7 @@ def run_assignment_2():
         qga = QGAEngine(optimizer, pop_size=pop_size, max_gen=gen)
         
         # Action Center
-        if st.button("🌟 INITIATE GLOBAL OPTIMIZATION", key="a2_btn", use_container_width=True):
+        if st.button("🌟 INITIATE GLOBAL OPTIMIZATION", key="a2_btn", width="stretch"):
             with st.status("Performing Multi-Swarm Handshake...", expanded=True) as status:
                 st.write("Initializing Qubits...")
                 time.sleep(0.5)
@@ -75,7 +75,7 @@ def run_assignment_2():
                 hovermode="x unified",
                 template="plotly_dark"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
             
             st.success(f"Final Fitness Index: {best_fit:.4f}")
         else:
