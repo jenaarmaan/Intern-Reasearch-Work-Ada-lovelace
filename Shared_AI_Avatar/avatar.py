@@ -1,31 +1,34 @@
 import streamlit as st
 import time
 import base64
+import textwrap
 from datetime import datetime
 from kali_brain import ask_kali
 
 # --- KALI UI Engine ---
 def render_safe(html_content: str):
-    """Sanitizes and safely renders KALI OS visual components."""
+    """Sanitizes and safely renders KALI OS visual components by removing markdown fences."""
     if not html_content: return
-    # Replace raw <hr> with high-tech dividers
-    processed_html = html_content.replace("<hr>", "<div class='kali-divider-line'></div>")
+    # CRITICAL: Strip all surrounding whitespace/tabs and dedicatedly dedent
+    clean_html = textwrap.dedent(html_content).strip()
+    # If the string STILL starts with a code block indicator or spaces, strip them manually
+    while clean_html.startswith(("`", "\n", " ")):
+        clean_html = clean_html.lstrip("`").lstrip("\n").lstrip(" ")
+    
+    processed_html = clean_html.replace("<hr>", "<div class='kali-divider-line'></div>")
     st.markdown(processed_html, unsafe_allow_html=True)
 
 def render_avatar(state="idle", message="", confidence=100.0, collapsed=False):
     """
     Renders KALI's physical presence and HUD.
     """
-    # Initialize start time if not exists
     if "start_time" not in st.session_state:
         st.session_state.start_time = time.time()
 
-    # 1. State-Aware Aura and Ring Speeds
     status_class = f"status-{state}"
     ring_speed = "slow" if state == "idle" else "fast" if state == "thinking" else "static"
     pulse_color = "#00f2ff" if state == "idle" else "#bc13fe" if state == "thinking" else "#ff3c3c"
     
-    # 2. Collapsed Minimal HUD Mode
     if collapsed:
         render_safe(f"""
         <div class="kali-hud-mini {status_class}">
@@ -35,7 +38,7 @@ def render_avatar(state="idle", message="", confidence=100.0, collapsed=False):
         """)
         return
 
-    # 3. Full HUD Render (Neural Orb + Speech Bubble + Metrics)
+    # FULL HUD 
     render_safe(f"""
     <div class="kali-visual-framework {status_class}">
         <div class="orb-platform-pro">
@@ -80,9 +83,8 @@ def render_avatar(state="idle", message="", confidence=100.0, collapsed=False):
     </div>
     """)
 
-    # 4. Sensory Backlog HUD
     with st.expander("📂 KALI SENSORY BACKLOG", expanded=False):
-        if "kali_history" not in st.session_state or not st.session_state.kali_history:
+        if not st.session_state.get("kali_history"):
             st.caption("Sensory buffers cleared. Waiting for interaction...")
         else:
             for entry in reversed(st.session_state.kali_history):
@@ -122,12 +124,9 @@ def render_system_status():
 def explain_chart(chart_title, data_summary):
     """Triggered by 'Ask KALI' button under charts."""
     prompt = f"Analyze this chart result for '{chart_title}'. Summary data: {data_summary}. Explain in 2 sentences."
-    
     st.session_state.kali_status = "thinking"
     st.session_state.kali_message = ""
-    
     for token in ask_kali(prompt, context="Chart Analysis"):
         st.session_state.kali_message += token
-        
     st.session_state.kali_status = "speaking"
     st.rerun()

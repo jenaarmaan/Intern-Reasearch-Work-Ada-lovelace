@@ -54,7 +54,13 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- PADDING NUCLEAR FIX & SCANLINES ---
+# --- PADDING NUCLEAR FIX & SCANLINES & CSS LOAD ---
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css("Shared_AI_Avatar/style.css")
+
 st.markdown("""
     <style>
         [data-testid="stHeader"] {display: none !important;}
