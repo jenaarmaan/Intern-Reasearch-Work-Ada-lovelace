@@ -1,226 +1,225 @@
 /* 
-   KALI CSS :: GOLBAL GLASSMORPHISM & KINETIC DESIGN 
-   Theme: NASA High-Tech Terminal / Neon Glass
+   KALI CSS :: PREMIUM HOLOGRAPHIC DESIGN 
+   Theme: NASA Quantum Command Terminal / Obsidian Glass
 */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500&family=Inter:wght@400;600&family=Space+Grotesk:wght@300;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;700&family=Inter:ital,wght@0,300;0,600;1,400&family=Space+Grotesk:wght@300;500;700&display=swap');
 
-/* --- 1. Global Reset & Container --- */
+/* --- 1. Global HUD Container --- */
 .kali-visual-framework {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
     color: #e0e0e0;
     max-width: 450px;
     margin: 0 auto;
-    padding: 30px;
-    border-radius: 40px;
-    background: rgba(10, 11, 25, 0.45);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 35px;
+    border-radius: 35px;
+    background: linear-gradient(135deg, rgba(8, 12, 28, 0.6) 0%, rgba(2, 4, 10, 0.9) 100%);
+    backdrop-filter: blur(45px);
+    border: 1px solid rgba(0, 242, 255, 0.12);
+    box-shadow: 0 50px 100px rgba(0, 0, 0, 0.9), 
+                inset 0 0 20px rgba(0, 242, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* --- 2. Neural Orb (Pulsing Sphere) --- */
+/* Holographic Scan Effect Overlay */
+.kali-visual-framework::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 242, 255, 0.05) 50%, transparent 100%);
+    animation: scan-line 6s linear infinite;
+    pointer-events: none;
+}
+
+/* --- 2. Neural Orb (Volumetric Sphere) --- */
 .orb-platform {
     position: relative;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 30px;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 35px;
     display: flex;
     justify-content: center;
     align-items: center;
-    perspective: 1000px;
 }
 
 .neural-orb {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.3) 0%, rgba(0, 10, 30, 0.9) 100%);
-    box-shadow: inset 0 4px 15px rgba(255, 255, 255, 0.15), 
-                0 10px 40px rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.4) 0%, rgba(0, 10, 30, 1) 100%);
+    box-shadow: inset 0 6px 20px rgba(255, 255, 255, 0.2), 
+                0 0 60px rgba(0, 0, 0, 0.8);
     z-index: 10;
-    transition: inherit;
-    animation: orb-idle 4s ease-in-out infinite;
+    animation: floating-orb 5s ease-in-out infinite;
 }
 
 .orb-core {
     position: absolute;
-    width: 40%;
-    height: 40%;
-    top: 30%;
-    left: 30%;
+    width: 50%;
+    height: 50%;
+    top: 25%;
+    left: 25%;
     border-radius: 50%;
     background: var(--glow-color, #00f2ff);
-    filter: blur(12px);
-    opacity: 0.8;
+    filter: blur(18px);
+    opacity: 0.85;
     animation: core-pulse 2s ease-in-out infinite;
 }
 
 .orb-ring {
     position: absolute;
-    top: -15%;
-    left: -15%;
-    width: 130%;
-    height: 130%;
-    border: 1px solid rgba(0, 242, 255, 0.12);
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
     border-radius: 50%;
+    border: 1px solid rgba(0, 242, 255, 0.08);
     pointer-events: none;
 }
 
-.ring-1 { animation: rotate-z 8s linear infinite; }
-.ring-2 { animation: rotate-y 6s linear infinite; transform: rotateX(70deg); }
+.ring-1 { animation: rotate-3d-x 10s linear infinite; }
+.ring-2 { animation: rotate-3d-y 8s linear infinite; transform: rotateX(60deg); }
 
-/* --- 3. Eight Aura States --- */
-.status-idle { --glow-color: #00f2ff; --aura-blur: 35px; }
-.status-thinking { --glow-color: #bc13fe; --aura-blur: 50px; }
-.status-speaking { --glow-color: #00ffcc; --aura-blur: 60px; }
-.status-error { --glow-color: #ff3344; --aura-blur: 80px; }
-.status-eureka { --glow-color: #ffd700; --aura-blur: 100px; }
-.status-warning { --glow-color: #ff8c00; --aura-blur: 45px; }
-.status-sleeping { --glow-color: #3e4c63; --aura-blur: 15px; }
-.status-excited { --glow-color: #ff00ff; --aura-blur: 55px; }
+/* --- 3. Status Matrix & Transitions --- */
+.status-idle { --glow-color: #00f2ff; }
+.status-thinking { --glow-color: #bc13fe; }
+.status-speaking { --glow-color: #00ffcc; }
+.status-error { --glow-color: #ff3c3c; }
+.status-eureka { --glow-color: #ffcc00; }
+.status-warning { --glow-color: #ff8c00; }
+.status-sleeping { --glow-color: #4a5d7a; }
+.status-excited { --glow-color: #ff00ff; }
 
-/* Apply Status Animations */
-.status-thinking .neural-orb { animation: orb-spin 1.5s linear infinite; }
-.status-speaking .neural-orb { animation: orb-speak 0.5s ease-in-out infinite; }
-.status-error .neural-orb { animation: orb-error 0.1s linear infinite; }
-
-/* --- 4. Glow Aura --- */
-.orb-aura-glow {
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    background: radial-gradient(circle, var(--glow-color, #00f2ff) 0%, transparent 70%);
-    filter: blur(var(--aura-blur, 35px));
-    opacity: 0.4;
-    transition: all 0.6s ease;
-    z-index: 5;
-}
-
-/* --- 5. Status Label --- */
+/* --- 4. HUD Typography & Labels --- */
 .status-label-container {
     position: absolute;
     bottom: -15px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 4px 14px;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.7rem;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
     font-weight: 700;
-    letter-spacing: 2px;
     color: var(--glow-color);
-    text-shadow: 0 0 10px var(--glow-color);
+    letter-spacing: 2px;
 }
 
 .pulse-dot {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     background-color: var(--glow-color);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--glow-color);
-    animation: core-pulse 1s ease-in-out infinite;
+    animation: core-pulse 1.2s ease-in-out infinite;
 }
 
-/* --- 6. Typewriter Speech Bubble --- */
+/* --- 5. Speech Bubble Terminal --- */
 .speech-bubble-glass {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.35);
     border-radius: 20px;
-    padding: 20px;
+    padding: 22px;
     margin-bottom: 25px;
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 5px 25px rgba(0, 0, 0, 0.4);
+    position: relative;
 }
 
 .speech-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
-    color: var(--glow-color);
+    margin-bottom: 15px;
     opacity: 0.8;
 }
 
-.header-tag { padding: 2px 8px; background: rgba(0, 242, 255, 0.1); border-radius: 4px; }
+.header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--glow-color);
+    letter-spacing: 2.5px;
+}
+
+.header-sync {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    color: #444;
+}
 
 .typewriter-text {
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    letter-spacing: 0.3px;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #f1f1f1;
     margin: 0;
-    color: #fff;
-    min-height: 2.4em;
 }
 
-/* --- 7. Confidence & HUD --- */
-.metrics-panel { margin-bottom: 20px; }
+/* --- 6. Indicators & Metrics --- */
+.metrics-panel { margin-bottom: 25px; }
+
 .metric-header {
     display: flex;
     justify-content: space-between;
-    font-family: 'Space Grotesk', sans-serif;
     font-size: 0.6rem;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-    opacity: 0.7;
+    letter-spacing: 2px;
+    color: #666;
+    margin-bottom: 10px;
 }
 
-.meter-track { height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; }
+.metric-value { color: var(--glow-color); font-weight: bold; }
+
+.meter-track { height: 5px; background: rgba(0, 0, 0, 0.5); border-radius: 3px; overflow: hidden; }
 .meter-fill { 
     height: 100%; 
     background: linear-gradient(90deg, var(--glow-color), #fff); 
-    box-shadow: 0 0 10px var(--glow-color);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px var(--glow-color);
+    transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.hud-labels { text-align: center; margin-top: 15px; }
 .kbd-hint {
-    display: block;
-    text-align: center;
-    font-size: 0.55rem;
-    color: #555;
-    letter-spacing: 1.5px;
-    margin-top: 10px;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem;
+    color: #444;
+    letter-spacing: 2px;
 }
 
-/* --- 8. MINI HUD MODE --- */
+.key-cap { 
+    color: var(--glow-color); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    padding: 1px 5px; 
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* --- 7. MINI HUD MODE --- */
 .kali-hud-mini {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
+    bottom: 30px;
+    right: 30px;
     z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
 }
 
 .neural-orb-mini {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--glow-color, #00f2ff) 20%, transparent 100%);
-    box-shadow: 0 0 30px var(--glow-color);
-    animation: orb-idle 2s ease-in-out infinite;
+    background: radial-gradient(circle, var(--glow-color, #00f2ff) 30%, transparent 100%);
+    box-shadow: 0 0 40px var(--glow-color);
+    animation: core-pulse 2s ease-in-out infinite;
 }
 
-.mini-tag {
-    font-size: 0.4rem;
-    color: var(--glow-color);
-    margin-top: 5px;
-    letter-spacing: 1px;
-    font-weight: bold;
-}
-
-/* --- 9. Animations --- */
-@keyframes orb-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-@keyframes orb-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes orb-speak { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-@keyframes orb-error { 0% { transform: translate(0,0); } 25% { transform: translate(3px, -3px); } 50% { transform: translate(-3px, 3px); } 75% { transform: translate(3px, 3px); } 100% { transform: translate(0,0); } }
-@keyframes core-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.4); opacity: 0.4; } }
-@keyframes rotate-z { from { transform: rotateZ(0); } to { transform: rotateZ(360deg); } }
-@keyframes rotate-y { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
+/* --- 8. Keyframes --- */
+@keyframes floating-orb { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(4deg); } }
+@keyframes core-pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.3); opacity: 0.5; } }
+@keyframes scan-line { from { top: -100%; } to { top: 100%; } }
+@keyframes rotate-3d-x { from { transform: rotateX(0deg) rotateY(20deg); } to { transform: rotateX(360deg) rotateY(20deg); } }
+@keyframes rotate-3d-y { from { transform: rotateY(0deg) rotateX(60deg); } to { transform: rotateY(360deg) rotateX(60deg); } }

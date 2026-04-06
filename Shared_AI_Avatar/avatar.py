@@ -72,15 +72,25 @@ def render_avatar(state="idle", message="System Ready.", confidence=100, collaps
             </div>
         </div>
         <div class="speech-bubble-glass">
-            <div class="speech-header"><span class="header-tag">KALI_FEED_V52</span><span class="header-sync">STABLE</span></div>
-            <div class="typewriter-body"><p class="typewriter-text">{message}</p></div>
+            <div class="speech-header">
+                <span class="header-tag">KALI_FEED_V52</span>
+                <span class="header-sync">STABLE</span>
+            </div>
+            <div class="typewriter-body">
+                <p class="typewriter-text">{message}</p>
+            </div>
         </div>
         <div class="metrics-panel">
-            <div class="metric-header"><span>COGNITIVE CONFIDENCE</span><span>{confidence}%</span></div>
-            <div class="meter-track"><div class="meter-fill" style="width: {confidence}%;"></div></div>
+            <div class="metric-header">
+                <span class="metric-label">COGNITIVE CONFIDENCE</span>
+                <span class="metric-value">{confidence}%</span>
+            </div>
+            <div class="meter-track">
+                <div class="meter-fill" style="width: {confidence}%;"></div>
+            </div>
         </div>
         <div class="hud-labels">
-            <span class="kbd-hint">Press K to focus KALI input</span>
+            <span class="kbd-hint">[ PRESS <span class="key-cap">K</span> TO SCAN COMMANDS ]</span>
         </div>
     </div>
     """, unsafe_allow_html=True)

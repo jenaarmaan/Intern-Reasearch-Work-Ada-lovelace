@@ -15,6 +15,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- Path Integration Hub ---
+def add_path(folder):
+    p = os.path.abspath(folder)
+    if p not in sys.path: sys.path.append(p)
+
 add_path("Shared_Core")
 add_path("Shared_AI_Avatar")
 add_path("Assignment_1")
@@ -57,11 +62,56 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; }
-    .stApp { background: radial-gradient(circle at 50% 10%, #0d0e23, #020205); color: #e0e0e0; font-family: 'Inter', sans-serif; }
-    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif !important; background: linear-gradient(135deg, white 0%, #00f2ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    section[data-testid="stSidebar"] { background: rgba(4, 5, 12, 0.98) !important; backdrop-filter: blur(40px); border-right: 1px solid rgba(0, 242, 242, 0.15); }
-    .status-capsule { background: rgba(0, 242, 255, 0.08); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(0, 242, 242, 0.4); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: #00f2ff; text-transform: uppercase; letter-spacing: 2px; }
+    :root { 
+        --neon-blue: #00f2ff; 
+        --neon-purple: #bc13fe; 
+        --glass-bg: rgba(10, 11, 25, 0.45);
+    }
+    
+    .stApp { 
+        background: radial-gradient(circle at 50% 10%, #0d0e23, #020205); 
+        color: #e0e0e0; 
+        font-family: 'Inter', sans-serif; 
+    }
+    
+    /* Premium Scanline Overlay */
+    .stApp::after {
+        content: " ";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+        z-index: 1000;
+        opacity: 0.25;
+    }
+
+    h1, h2, h3 { 
+        font-family: 'Space Grotesk', sans-serif !important; 
+        background: linear-gradient(135deg, white 0%, #00f2ff 100%); 
+        -webkit-background-clip: text; 
+        background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+    }
+
+    section[data-testid="stSidebar"] { 
+        background: rgba(4, 5, 12, 0.98) !important; 
+        backdrop-filter: blur(40px); 
+        border-right: 1px solid rgba(0, 242, 242, 0.15); 
+    }
+
+    .status-capsule { 
+        background: rgba(0, 242, 255, 0.08); 
+        padding: 5px 14px; 
+        border-radius: 50px; 
+        border: 1px solid rgba(0, 242, 242, 0.3); 
+        font-size: 0.65rem; 
+        font-family: 'JetBrains Mono', monospace; 
+        color: #00f2ff; 
+        text-transform: uppercase; 
+        letter-spacing: 2px; 
+        box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+    }
 </style>
 """, unsafe_allow_html=True)
 
