@@ -6,7 +6,7 @@ import os
 import tempfile
 import time
 import speech_recognition as sr
-from audiorecorder import audiorecorder
+from audio_recorder_streamlit import audio_recorder
 from datetime import datetime
 
 # --- KALI Voice Config ---
@@ -86,30 +86,32 @@ def speak(text):
 def listen():
     """
     KALI Voice Input Engine.
-    Uses audiorecorder for UI and SpeechRecognition for transcription.
+    Uses audio_recorder_streamlit for UI and SpeechRecognition for transcription.
     """
-    st.info("KALI Listening Node: Active")
-    audio = audiorecorder("Click to Speak", "Recording...", key="kali_recorder")
+    st.info("KALI Listening Node: Active. Click the microphone icon.")
+    audio_bytes = audio_recorder(text="Listen", icon_size="2x")
     
-    if len(audio) > 0:
-        # Save to temp file
+    if audio_bytes:
+        # Save raw bytes to temp file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_audio:
-            audio.export(tmp_audio.name, format="wav")
+            tmp_audio.write(audio_bytes)
             tmp_path = tmp_audio.name
             
         # Transcribe
         recognizer = sr.Recognizer()
-        with sr.AudioFile(tmp_path) as source:
-            audio_data = recognizer.record(source)
-            try:
+        try:
+            with sr.AudioFile(tmp_path) as source:
+                audio_data = recognizer.record(source)
                 text = recognizer.recognize_google(audio_data)
                 return text
-            except sr.UnknownValueError:
-                return "KALI detected silence or unindexed phonemes."
-            except sr.RequestError as e:
-                return f"Transcription service unavailable: {e}"
-            finally:
-                if os.path.exists(tmp_path): os.remove(tmp_path)
+        except sr.UnknownValueError:
+            return "KALI detected silence or unindexed phonemes."
+        except sr.RequestError as e:
+            return f"Transcription service unavailable: {e}"
+        except Exception as e:
+            return f"KALI Listening Error: {e}"
+        finally:
+            if os.path.exists(tmp_path): os.remove(tmp_path)
     
     return ""
 
