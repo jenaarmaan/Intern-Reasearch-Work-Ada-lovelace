@@ -5,3 +5,8 @@ matplotlib
 plotly
 qiskit
 qiskit-aer
+google-generativeai
+edge-tts
+audio-recorder-streamlit
+pygame
+    

@@ -57,7 +57,7 @@ with st.sidebar:
     
     st.markdown("---")
     # Centered Minimalist Avatar for Assignment 1
-    render_ai_avatar(context="Assignment 1", message="Ready to find alpha.", status="idle")
+    render_ai_avatar(context="Assignment 1")
 
 # --- Data Generation (Mock) ---
 np.random.seed(42)

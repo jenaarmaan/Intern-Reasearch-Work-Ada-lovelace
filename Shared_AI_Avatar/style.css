@@ -1,102 +1,244 @@
-/* KALI OS PRO :: Elite Design System V5.4 (Laser-Scan Protocol) */
+/* 
+    KALI-OS :: Advanced Cognitive Design System
+    Kinetic Agentic Learning Intelligence
+*/
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;700&display=swap');
 
 :root {
-    --neon-blue: #00f2ff;
-    --neon-purple: #bc13fe;
-    --neon-green: #00ff41;
+    --kali-blue: #00f2ff;
+    --kali-purple: #bc13fe;
+    --kali-green: #00ff41;
+    --kali-red: #ff3131;
+    --kali-amber: #ffbf00;
+    --kali-gold: #ffd700;
+    --kali-white: #ffffff;
+    --glass-bg: rgba(7, 8, 20, 0.7);
+    --neon-glow: 0 0 20px rgba(0, 242, 255, 0.3);
 }
 
-/* 🧬 GLOBAL STABILIZATION (UNCHANGED) */
-.block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; max-width: 95% !important; }
-header { display: none !important; }
-
-/* 💎 THE ELITE KALI CONTAINER */
+/* --- THE NEURAL ORB --- */
 .avatar-container {
-    background: rgba(15, 18, 30, 0.75);
-    backdrop-filter: blur(40px) saturate(220%);
-    -webkit-backdrop-filter: blur(40px) saturate(220%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 42px;
-    padding: 40px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.8s ease;
-    min-height: 640px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    padding: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 🔵 NEON STATES (CYAN/PURPLE/GREEN) */
-.avatar-container.status-idle { box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 255, 0.1); }
-.avatar-container.status-processing { border-color: rgba(188, 19, 254, 0.4); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 60px rgba(188, 19, 254, 0.3); }
-.avatar-container.status-success { border-color: rgba(0, 255, 65, 0.4); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 255, 65, 0.3); }
-
-/* ⚛️ HYPER-REALISTIC 3D ORB (CORE & RINGS) */
 .avatar-orb {
-    width: 290px; height: 290px; margin-bottom: 25px; border-radius: 50%;
-    position: relative; z-index: 2; animation: floating-elite 8s ease-in-out infinite;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.6s ease-in-out;
+    z-index: 5;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.6) 100%);
+    overflow: hidden;
 }
 
-/* ⚡ LASER SCAN BEAM :: Feature 1.5 Integration */
-.avatar-orb::selection { background: transparent; } /* Hidden metadata */
+.avatar-orb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mix-blend-mode: screen;
+    filter: brightness(1.2) contrast(1.1);
+    transition: all 0.6s ease;
+}
 
-.avatar-orb::before {
-    content: '';
+/* Core Orb Pulse */
+.orb-pulse {
     position: absolute;
-    top: 0; left: -10%; width: 120%; height: 3px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--neon-blue) 40%, 
-        #fff 50%, 
-        var(--neon-blue) 60%, 
-        transparent 100%);
-    box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
-    opacity: 0.6;
-    animation: laser-scan-sweep 3s ease-in-out infinite; /* ACCURATE 3S CYCLE */
-    z-index: 10;
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--kali-blue) 0%, transparent 70%);
+    opacity: 0.3;
+    animation: core-pulse 4s infinite ease-in-out;
 }
 
-@keyframes laser-scan-sweep {
-    0% { top: 0%; opacity: 0; filter: hue-rotate(0deg); }
-    15% { opacity: 0.8; }
-    50% { filter: hue-rotate(20deg); }
-    85% { opacity: 0.8; }
-    100% { top: 100%; opacity: 0; filter: hue-rotate(0deg); }
+@keyframes core-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.15); opacity: 0.45; }
 }
 
-.orb-pulse { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; opacity: 0.15; animation: orb-pulse-anim 4s ease-in-out infinite; z-index: 1; }
-.avatar-orb img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.1)); border: 3px solid rgba(255, 255, 255, 0.15); position: relative; z-index: 5; }
+/* --- STATE SPECIFIC CSS --- */
 
-/* 🌀 RINGS (MOVING TO AFTER TO KEEP SCAN ON TOP) */
-.avatar-orb::after {
-    content: ''; 
-    position: absolute; 
-    top: -10%; left: -10%; width: 120%; height: 120%;
-    border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.2); 
-    border-left-color: var(--neon-blue); border-top-color: transparent;
-    animation: rotate-ring 12s linear infinite; 
-    pointer-events: none;
+/* IDLE: Blue Pulse + Laser Scan */
+.status-idle .avatar-orb { box-shadow: 0 0 40px rgba(0, 242, 255, 0.25); border: 1px solid rgba(0, 242, 255, 0.2); }
+.status-idle .orb-pulse { background: radial-gradient(circle, var(--kali-blue) 0%, transparent 65%); animation-duration: 4s; }
+.status-idle::after { 
+    content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px; 
+    background: var(--kali-blue); box-shadow: 0 0 15px var(--kali-blue);
+    animation: laser-scan 3s infinite linear; opacity: 0.4;
 }
 
-/* 💬 SPEECH BUBBLE (STABILIZED) */
+@keyframes laser-scan { 
+    0% { top: 0%; } 100% { top: 100%; } 
+}
+
+/* THINKING: Purple Aura Surge */
+.status-thinking .avatar-orb { box-shadow: 0 0 60px rgba(188, 19, 254, 0.6); transform: scale(1.05); }
+.status-thinking .orb-pulse { background: radial-gradient(circle, var(--kali-purple) 0%, transparent 60%); animation: thinking-pulse 1s infinite alternate; }
+.status-thinking img { filter: hue-rotate(270deg) brightness(1.4); }
+
+@keyframes thinking-pulse {
+    0% { transform: scale(1.0); opacity: 0.4; filter: blur(0px); }
+    100% { transform: scale(1.2); opacity: 0.8; filter: blur(2px); }
+}
+
+/* SPEAKING: Green Ripple Waves */
+.status-speaking .avatar-orb { border: 2px solid var(--kali-green); }
+.status-speaking .orb-pulse { background: radial-gradient(circle, var(--kali-green) 0%, transparent 70%); animation: speak-vibes 0.4s infinite alternate; }
+.status-speaking::before {
+    content: ''; position: absolute; width: 150px; height: 150px; border: 2px solid var(--kali-green);
+    border-radius: 50%; animation: ripple-expand 1.5s infinite linear; opacity: 0;
+}
+
+@keyframes ripple-expand {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes speak-vibes { 
+    0% { transform: scale(1.05); } 100% { transform: scale(1.15); } 
+}
+
+/* ERROR: Red Flash + Shake */
+.status-error { animation: shake 0.5s infinite; border-color: var(--kali-red) !important; }
+.status-error .avatar-orb { box-shadow: 0 0 80px var(--kali-red); filter: saturate(2); }
+.status-error .orb-pulse { background: var(--kali-red); animation: error-strobe 0.2s infinite alternate; }
+
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 3px); }
+    75% { transform: translate(3px, -3px); }
+}
+
+@keyframes error-strobe { 0% { opacity: 0.1; } 100% { opacity: 1.0; } }
+
+/* EUREKA: White Burst + Gold Rings */
+.status-eureka .avatar-orb { box-shadow: 0 0 100px var(--kali-white); border: 2px solid var(--kali-gold); }
+.status-eureka::before {
+    content: ''; position: absolute; width: 0; height: 0; border: 5px solid var(--kali-gold);
+    border-radius: 50%; animation: boom 1s forwards cubic-bezier(0,1,1,1);
+}
+
+@keyframes boom { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 400px; height: 400px; opacity: 0; border-width: 1px; } }
+
+/* SLEEPING: Dim Heartbeat */
+.status-sleeping { opacity: 0.5; filter: grayscale(0.8); }
+.status-sleeping .orb-pulse { animation: breathing 6s infinite ease-in-out; background: #333; }
+@keyframes breathing { 0%, 100% { transform: scale(0.95); opacity: 0.1; } 50% { transform: scale(1.0); opacity: 0.2; } }
+
+/* EXCITED: Multi-color Cascade */
+.status-excited .avatar-orb { animation: color-jump 0.5s infinite alternate; }
+@keyframes color-jump {
+    0% { box-shadow: 0 0 30px #00f2ff; }
+    50% { box-shadow: 0 0 50px #bc13fe; }
+    100% { box-shadow: 0 0 70px #00ff41; }
+}
+
+/* --- COMPONENTS --- */
+
 .ai-speech-bubble {
-    background: rgba(255, 255, 255, 0.03); border-radius: 24px; padding: 24px; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); width: 100%;
+    width: 100%;
+    margin-top: 25px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    min-height: 120px;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
 }
-.typewriter-content { font-family: 'Outfit', sans-serif; color: #f0f0f0; line-height: 1.6; font-size: 1.15rem; position: relative; overflow: hidden; text-align: left; }
-.kinetic-reveal { display: inline-block; position: relative; animation: text-reveal-shimmer 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; background: linear-gradient(90deg, #fff 0%, #fff 50%, rgba(255,255,255,0.1) 100%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.caret-pulse { display: inline-block; width: 12px; height: 18px; background: var(--neon-blue); margin-left: 5px; vertical-align: middle; animation: caret-blink 0.8s step-end infinite; box-shadow: 0 0 10px var(--neon-blue); border-radius: 2px; }
 
-/* 🌊 THOUGHT WAVES */
-.wave { animation: quantum-wave 2s ease-in-out infinite; width: 4px; border-radius: 10px; background: var(--neon-blue); }
+.typewriter-content {
+    display: inline;
+    position: relative;
+}
 
-@keyframes text-reveal-shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0% 0; -webkit-text-fill-color: #fff; } }
-@keyframes rotate-ring { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes floating-elite { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-@keyframes orb-pulse-anim { 0%, 100% { transform: scale(1); opacity: 0.15; } 50% { transform: scale(1.15); opacity: 0.35; } }
-@keyframes caret-blink { from, to { opacity: 0; } 50% { opacity: 1; } }
-@keyframes quantum-wave { 0%, 100% { height: 10px; opacity: 0.3; } 50% { height: 40px; opacity: 1; box-shadow: 0 0 15px var(--neon-purple); } }
+.kinetic-reveal {
+    background: linear-gradient(90deg, #fff 0%, #00f2ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+}
+
+.caret-pulse {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background: var(--kali-blue);
+    margin-left: 5px;
+    animation: caret-blink 0.8s infinite;
+    vertical-align: middle;
+}
+
+@keyframes caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* Confidence Meter */
+.confidence-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--kali-purple), var(--kali-blue));
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px var(--kali-blue);
+}
+
+.micro-log {
+    width: 100%;
+    height: 80px;
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    color: #666;
+    overflow-y: auto;
+    border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.status-label {
+    margin-top: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--kali-blue);
+    opacity: 0.8;
+}
+
+/* Floating Particle Effect */
+.particle-drift {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Glassmorphism overrides for Streamlit elements inside */
+.stMarkdown { margin: 0 !important; }

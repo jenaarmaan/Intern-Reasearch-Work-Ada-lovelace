@@ -241,6 +241,11 @@ with col2:
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         )
         st.plotly_chart(fig, use_container_width=True)
+        
+        # KALI Insight Button
+        if st.button("🪄 KALI :: EXPLAIN THIS CONVERGENCE"):
+            from avatar import explain_this
+            explain_this("Convergence Chart", f"Current best fitness is {best_fit:.4f} after {len(history)} generations.")
 
 # Column 3: Strategy Center & Terminal
 with col3:

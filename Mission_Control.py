@@ -29,6 +29,7 @@ add_path("Assignment_2")
 from avatar import render_ai_avatar
 from theory_docs import run_theoretical_info, run_project_docs
 from avatar_specs import run_avatar_specs
+from kali_proactive import run_kali_walkthrough, generate_evaluator_report
 
 import Assignment_1.app_module as a1
 import Assignment_2.app_module as a2
@@ -61,29 +62,37 @@ with st.sidebar:
     
     st.markdown("### 🧬 SYSTEM NODES")
     nav = st.radio("Access Level", ["PORTFOLIO OPTIMIZER (A2)", "TECHNICAL REPORT (A1)", "KALI AVATAR CORE", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
+    
+    st.markdown("---")
+    st.markdown("### 🛠️ COGNITIVE CONTROLS")
+    
+    # Competition / Demo Mode
+    if st.button("🚀 INITIATE DEMO WALKTHROUGH"):
+        run_kali_walkthrough()
+        
+    # Evaluator Report
+    report_text = generate_evaluator_report()
+    st.download_button("📄 GENERATE EVALUATOR REPORT", data=report_text, file_name="KALI_Mission_Report.txt")
+    
     st.markdown("---")
     st.info("KALI OS Status: **NOMINAL**")
 
 # --- Persistent Persistence Layer (Header Section) ---
 st.markdown("<div style='text-align:right;'><span class='status-capsule'>KALI NEXUS SYNC :: ONLINE [L-PK]</span></div>", unsafe_allow_html=True)
 
-header_col1, header_col2 = st.columns([1.2, 2.8])
+header_col1, header_col2 = st.columns([1.5, 2.5])
 
 with header_col1:
-    # Feature 2.1 & 2.2: Context-Aware Personality Map
-    status_map = {
-        "PORTFOLIO OPTIMIZER (A2)": ("Accessing Quantum V3 Core. KALI stands ready for global stock optimization. [Ry-Gate Rotation Protocol Active]", "idle"),
-        "TECHNICAL REPORT (A1)": ("KALI is analyzing the Agent Architecture Research nodes. Parsing PEAS Framework and PE-bench datasets...", "idle"),
-        "KALI AVATAR CORE": ("Initializing KALI's internal diagnostic report. Accessing Cognitive Neural Schematics V4.1...", "idle"),
-        "THEORETICAL CONCEPTS": ("Knowledge Extraction Unit Active. KALI is synthesizing Quantum theoretical structures for display.", "idle"),
-        "PROJECT DOCUMENTATION": ("Extracting KALI Deployment Metadata. Guidelines and mission constraints verified.", "idle")
-    }
-    msg, stat = status_map[nav]
-    render_ai_avatar(context=nav.split()[-1], message=msg, status=stat)
+    # Context Selection for Avatar
+    current_ctx = nav.split()[-1]
+    render_ai_avatar(context=current_ctx)
 
 with header_col2:
     # Feature 2.3 & 2.4: Google-Tier Geometric Branding
-    st.markdown(f"<div style='margin-top:0px;'><p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V3.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Research Portal :: KALI AI OS</p></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='margin-top:0px;'><p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V5.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Intelligence Portal :: KALI AI OS</p></div>", unsafe_allow_html=True)
+    
+    # Persistent Chat Hint
+    st.caption("Press 'K' to focus command input at any time.")
 
 st.markdown("<hr style='border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;'>")
 
