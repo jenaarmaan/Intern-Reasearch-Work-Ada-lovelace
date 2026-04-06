@@ -5,52 +5,114 @@ import base64
 import os
 import tempfile
 import time
+import speech_recognition as sr
+from audiorecorder import audiorecorder
+from datetime import datetime
 
-# --- KALI Voice: Voice Profile ---
-KALI_VOICE_PROFILE = "en-US-AriaNeural" # or "en-US-JennyNeural"
+# --- KALI Voice Config ---
+VOICE = "en-US-AriaNeural"
+RATE = "+10%"
+PITCH = "+5Hz"
 
-async def generate_speech_audio(text, voice=KALI_VOICE_PROFILE):
-    """Generates KALI's neural voice from text using edge-tts."""
-    communicate = edge_tts.Communicate(text, voice)
+# --- Initialization ---
+if "kali_muted" not in st.session_state:
+    st.session_state.kali_muted = False
+if "voice_queue" not in st.session_state:
+    st.session_state.voice_queue = []
+if "is_speaking" not in st.session_state:
+    st.session_state.is_speaking = False
+
+@st.cache_resource(show_spinner=False)
+def get_speech_loop():
+    """Returns a fresh event loop for TTS generation."""
+    return asyncio.new_event_loop()
+
+@st.cache_data(show_spinner=False)
+def generate_speech_audio_sync(text):
+    """
+    Synchronous wrapper for generating KALI's neural voice.
+    Cached to ensure the same word results in zero latency for the second instance.
+    """
+    loop = get_speech_loop()
+    asyncio.set_event_loop(loop)
     
-    # Create temp audio file
+    communicate = edge_tts.Communicate(text, VOICE, rate=RATE, pitch=PITCH)
+    
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_file:
         tmp_path = tmp_file.name
-        await communicate.save(tmp_path)
+        loop.run_until_complete(communicate.save(tmp_path))
     
     return tmp_path
 
-def speak_text(text, placeholder):
-    """Renders autoplays audio in streamlit and mutes if necessary."""
-    if "kali_mute" not in st.session_state:
-        st.session_state.kali_mute = False
-        
-    if st.session_state.kali_mute:
+def speak(text):
+    """
+    KALI Voice Output Engine.
+    Handles caching, queuing, muting, and audio-reactive timing.
+    """
+    if st.session_state.kali_muted:
+        return 0
+    
+    if st.session_state.is_speaking:
+        st.session_state.voice_queue.append(text)
         return
-        
+    
+    st.session_state.is_speaking = True
+    
     try:
-        # Loop over until file is ready and playable
-        # Edge-tts can be async so I'll wrap it
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        path = loop.run_until_complete(generate_speech_audio(text))
+        # Use cached sync generator
+        path = generate_speech_audio_sync(text)
         
+        # Calculate duration approx
+        duration = len(text) / 15.0
+        
+        # Inject Audio
         with open(path, "rb") as f:
-            audio_bytes = f.read()
-            b64 = base64.b64encode(audio_bytes).decode()
-            
-            # Use small invisible audio tag
+            b64 = base64.b64encode(f.read()).decode()
             audio_tag = f'<audio autoplay="true" style="display:none;"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>'
-            placeholder.markdown(audio_tag, unsafe_allow_html=True)
-            
-        # Optional: cleanup (wait a bit to be safe or delete it)
-        # os.unlink(path) 
-    except Exception as e:
-        st.error(f"KALI Voice Failure: {e}")
+            st.markdown(audio_tag, unsafe_allow_html=True)
+        
+        st.session_state.is_speaking = False
+        if st.session_state.voice_queue:
+            next_text = st.session_state.voice_queue.pop(0)
+            speak(next_text)
 
-def get_voice_transcription():
-    """Reserved for future streamlit-audiorecorder integration."""
-    # Note: Streamlit-audiorecorder returns audio_bytes or a wav/mp3.
-    # To transcribe, we'd typically send to Whisper API or similar.
-    # For now, we'll placeholder as requested.
-    pass
+        return duration
+        
+    except Exception as e:
+        st.error(f"KALI Vocal Node Failure: {e}")
+        st.session_state.is_speaking = False
+        return 0
+
+def listen():
+    """
+    KALI Voice Input Engine.
+    Uses audiorecorder for UI and SpeechRecognition for transcription.
+    """
+    st.info("KALI Listening Node: Active")
+    audio = audiorecorder("Click to Speak", "Recording...", key="kali_recorder")
+    
+    if len(audio) > 0:
+        # Save to temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_audio:
+            audio.export(tmp_audio.name, format="wav")
+            tmp_path = tmp_audio.name
+            
+        # Transcribe
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(tmp_path) as source:
+            audio_data = recognizer.record(source)
+            try:
+                text = recognizer.recognize_google(audio_data)
+                return text
+            except sr.UnknownValueError:
+                return "KALI detected silence or unindexed phonemes."
+            except sr.RequestError as e:
+                return f"Transcription service unavailable: {e}"
+            finally:
+                if os.path.exists(tmp_path): os.remove(tmp_path)
+    
+    return ""
+
+def set_mute(muted_status: bool):
+    """Sets KALI's vocal suppression mode."""
+    st.session_state.kali_muted = muted_status

@@ -1,244 +1,226 @@
 /* 
-    KALI-OS :: Advanced Cognitive Design System
-    Kinetic Agentic Learning Intelligence
+   KALI CSS :: GOLBAL GLASSMORPHISM & KINETIC DESIGN 
+   Theme: NASA High-Tech Terminal / Neon Glass
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500&family=Inter:wght@400;600&family=Space+Grotesk:wght@300;700&display=swap');
 
-:root {
-    --kali-blue: #00f2ff;
-    --kali-purple: #bc13fe;
-    --kali-green: #00ff41;
-    --kali-red: #ff3131;
-    --kali-amber: #ffbf00;
-    --kali-gold: #ffd700;
-    --kali-white: #ffffff;
-    --glass-bg: rgba(7, 8, 20, 0.7);
-    --neon-glow: 0 0 20px rgba(0, 242, 255, 0.3);
-}
-
-/* --- THE NEURAL ORB --- */
-.avatar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
+/* --- 1. Global Reset & Container --- */
+.kali-visual-framework {
+    font-family: 'Inter', sans-serif;
+    color: #e0e0e0;
+    max-width: 450px;
+    margin: 0 auto;
     padding: 30px;
-    background: var(--glass-bg);
+    border-radius: 40px;
+    background: rgba(10, 11, 25, 0.45);
     backdrop-filter: blur(25px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.avatar-orb {
+/* --- 2. Neural Orb (Pulsing Sphere) --- */
+.orb-platform {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.neural-orb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.3) 0%, rgba(0, 10, 30, 0.9) 100%);
+    box-shadow: inset 0 4px 15px rgba(255, 255, 255, 0.15), 
+                0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    transition: inherit;
+    animation: orb-idle 4s ease-in-out infinite;
+}
+
+.orb-core {
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    top: 30%;
+    left: 30%;
+    border-radius: 50%;
+    background: var(--glow-color, #00f2ff);
+    filter: blur(12px);
+    opacity: 0.8;
+    animation: core-pulse 2s ease-in-out infinite;
+}
+
+.orb-ring {
+    position: absolute;
+    top: -15%;
+    left: -15%;
+    width: 130%;
+    height: 130%;
+    border: 1px solid rgba(0, 242, 255, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.ring-1 { animation: rotate-z 8s linear infinite; }
+.ring-2 { animation: rotate-y 6s linear infinite; transform: rotateX(70deg); }
+
+/* --- 3. Eight Aura States --- */
+.status-idle { --glow-color: #00f2ff; --aura-blur: 35px; }
+.status-thinking { --glow-color: #bc13fe; --aura-blur: 50px; }
+.status-speaking { --glow-color: #00ffcc; --aura-blur: 60px; }
+.status-error { --glow-color: #ff3344; --aura-blur: 80px; }
+.status-eureka { --glow-color: #ffd700; --aura-blur: 100px; }
+.status-warning { --glow-color: #ff8c00; --aura-blur: 45px; }
+.status-sleeping { --glow-color: #3e4c63; --aura-blur: 15px; }
+.status-excited { --glow-color: #ff00ff; --aura-blur: 55px; }
+
+/* Apply Status Animations */
+.status-thinking .neural-orb { animation: orb-spin 1.5s linear infinite; }
+.status-speaking .neural-orb { animation: orb-speak 0.5s ease-in-out infinite; }
+.status-error .neural-orb { animation: orb-error 0.1s linear infinite; }
+
+/* --- 4. Glow Aura --- */
+.orb-aura-glow {
+    position: absolute;
     width: 140px;
     height: 140px;
-    border-radius: 50%;
-    position: relative;
+    background: radial-gradient(circle, var(--glow-color, #00f2ff) 0%, transparent 70%);
+    filter: blur(var(--aura-blur, 35px));
+    opacity: 0.4;
+    transition: all 0.6s ease;
+    z-index: 5;
+}
+
+/* --- 5. Status Label --- */
+.status-label-container {
+    position: absolute;
+    bottom: -15px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.6s ease-in-out;
-    z-index: 5;
-    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.6) 100%);
-    overflow: hidden;
-}
-
-.avatar-orb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    mix-blend-mode: screen;
-    filter: brightness(1.2) contrast(1.1);
-    transition: all 0.6s ease;
-}
-
-/* Core Orb Pulse */
-.orb-pulse {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--kali-blue) 0%, transparent 70%);
-    opacity: 0.3;
-    animation: core-pulse 4s infinite ease-in-out;
-}
-
-@keyframes core-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.2; }
-    50% { transform: scale(1.15); opacity: 0.45; }
-}
-
-/* --- STATE SPECIFIC CSS --- */
-
-/* IDLE: Blue Pulse + Laser Scan */
-.status-idle .avatar-orb { box-shadow: 0 0 40px rgba(0, 242, 255, 0.25); border: 1px solid rgba(0, 242, 255, 0.2); }
-.status-idle .orb-pulse { background: radial-gradient(circle, var(--kali-blue) 0%, transparent 65%); animation-duration: 4s; }
-.status-idle::after { 
-    content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 2px; 
-    background: var(--kali-blue); box-shadow: 0 0 15px var(--kali-blue);
-    animation: laser-scan 3s infinite linear; opacity: 0.4;
-}
-
-@keyframes laser-scan { 
-    0% { top: 0%; } 100% { top: 100%; } 
-}
-
-/* THINKING: Purple Aura Surge */
-.status-thinking .avatar-orb { box-shadow: 0 0 60px rgba(188, 19, 254, 0.6); transform: scale(1.05); }
-.status-thinking .orb-pulse { background: radial-gradient(circle, var(--kali-purple) 0%, transparent 60%); animation: thinking-pulse 1s infinite alternate; }
-.status-thinking img { filter: hue-rotate(270deg) brightness(1.4); }
-
-@keyframes thinking-pulse {
-    0% { transform: scale(1.0); opacity: 0.4; filter: blur(0px); }
-    100% { transform: scale(1.2); opacity: 0.8; filter: blur(2px); }
-}
-
-/* SPEAKING: Green Ripple Waves */
-.status-speaking .avatar-orb { border: 2px solid var(--kali-green); }
-.status-speaking .orb-pulse { background: radial-gradient(circle, var(--kali-green) 0%, transparent 70%); animation: speak-vibes 0.4s infinite alternate; }
-.status-speaking::before {
-    content: ''; position: absolute; width: 150px; height: 150px; border: 2px solid var(--kali-green);
-    border-radius: 50%; animation: ripple-expand 1.5s infinite linear; opacity: 0;
-}
-
-@keyframes ripple-expand {
-    0% { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(2.5); opacity: 0; }
-}
-
-@keyframes speak-vibes { 
-    0% { transform: scale(1.05); } 100% { transform: scale(1.15); } 
-}
-
-/* ERROR: Red Flash + Shake */
-.status-error { animation: shake 0.5s infinite; border-color: var(--kali-red) !important; }
-.status-error .avatar-orb { box-shadow: 0 0 80px var(--kali-red); filter: saturate(2); }
-.status-error .orb-pulse { background: var(--kali-red); animation: error-strobe 0.2s infinite alternate; }
-
-@keyframes shake {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(-3px, 3px); }
-    75% { transform: translate(3px, -3px); }
-}
-
-@keyframes error-strobe { 0% { opacity: 0.1; } 100% { opacity: 1.0; } }
-
-/* EUREKA: White Burst + Gold Rings */
-.status-eureka .avatar-orb { box-shadow: 0 0 100px var(--kali-white); border: 2px solid var(--kali-gold); }
-.status-eureka::before {
-    content: ''; position: absolute; width: 0; height: 0; border: 5px solid var(--kali-gold);
-    border-radius: 50%; animation: boom 1s forwards cubic-bezier(0,1,1,1);
-}
-
-@keyframes boom { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 400px; height: 400px; opacity: 0; border-width: 1px; } }
-
-/* SLEEPING: Dim Heartbeat */
-.status-sleeping { opacity: 0.5; filter: grayscale(0.8); }
-.status-sleeping .orb-pulse { animation: breathing 6s infinite ease-in-out; background: #333; }
-@keyframes breathing { 0%, 100% { transform: scale(0.95); opacity: 0.1; } 50% { transform: scale(1.0); opacity: 0.2; } }
-
-/* EXCITED: Multi-color Cascade */
-.status-excited .avatar-orb { animation: color-jump 0.5s infinite alternate; }
-@keyframes color-jump {
-    0% { box-shadow: 0 0 30px #00f2ff; }
-    50% { box-shadow: 0 0 50px #bc13fe; }
-    100% { box-shadow: 0 0 70px #00ff41; }
-}
-
-/* --- COMPONENTS --- */
-
-.ai-speech-bubble {
-    width: 100%;
-    margin-top: 25px;
-    padding: 24px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #e0e0e0;
-    min-height: 120px;
-    position: relative;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.typewriter-content {
-    display: inline;
-    position: relative;
-}
-
-.kinetic-reveal {
-    background: linear-gradient(90deg, #fff 0%, #00f2ff 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 500;
-}
-
-.caret-pulse {
-    display: inline-block;
-    width: 8px;
-    height: 18px;
-    background: var(--kali-blue);
-    margin-left: 5px;
-    animation: caret-blink 0.8s infinite;
-    vertical-align: middle;
-}
-
-@keyframes caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-/* Confidence Meter */
-.confidence-bar-container {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-    margin-top: 15px;
-    overflow: hidden;
-}
-
-.confidence-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--kali-purple), var(--kali-blue));
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px var(--kali-blue);
-}
-
-.micro-log {
-    width: 100%;
-    height: 80px;
-    margin-top: 20px;
-    padding: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-    font-size: 0.7rem;
-    color: #666;
-    overflow-y: auto;
-    border-top: 1px solid rgba(255,255,255,0.03);
-}
-
-.status-label {
-    margin-top: 12px;
+    gap: 8px;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--kali-blue);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--glow-color);
+    text-shadow: 0 0 10px var(--glow-color);
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--glow-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--glow-color);
+    animation: core-pulse 1s ease-in-out infinite;
+}
+
+/* --- 6. Typewriter Speech Bubble --- */
+.speech-bubble-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.speech-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--glow-color);
     opacity: 0.8;
 }
 
-/* Floating Particle Effect */
-.particle-drift {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
+.header-tag { padding: 2px 8px; background: rgba(0, 242, 255, 0.1); border-radius: 4px; }
+
+.typewriter-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    margin: 0;
+    color: #fff;
+    min-height: 2.4em;
 }
 
-/* Glassmorphism overrides for Streamlit elements inside */
-.stMarkdown { margin: 0 !important; }
+/* --- 7. Confidence & HUD --- */
+.metrics-panel { margin-bottom: 20px; }
+.metric-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.meter-track { height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; }
+.meter-fill { 
+    height: 100%; 
+    background: linear-gradient(90deg, var(--glow-color), #fff); 
+    box-shadow: 0 0 10px var(--glow-color);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kbd-hint {
+    display: block;
+    text-align: center;
+    font-size: 0.55rem;
+    color: #555;
+    letter-spacing: 1.5px;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- 8. MINI HUD MODE --- */
+.kali-hud-mini {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.neural-orb-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--glow-color, #00f2ff) 20%, transparent 100%);
+    box-shadow: 0 0 30px var(--glow-color);
+    animation: orb-idle 2s ease-in-out infinite;
+}
+
+.mini-tag {
+    font-size: 0.4rem;
+    color: var(--glow-color);
+    margin-top: 5px;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+/* --- 9. Animations --- */
+@keyframes orb-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes orb-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes orb-speak { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes orb-error { 0% { transform: translate(0,0); } 25% { transform: translate(3px, -3px); } 50% { transform: translate(-3px, 3px); } 75% { transform: translate(3px, 3px); } 100% { transform: translate(0,0); } }
+@keyframes core-pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.4); opacity: 0.4; } }
+@keyframes rotate-z { from { transform: rotateZ(0); } to { transform: rotateZ(360deg); } }
+@keyframes rotate-y { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }

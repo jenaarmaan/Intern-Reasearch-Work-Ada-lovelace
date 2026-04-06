@@ -1,137 +1,102 @@
 import streamlit as st
 import os
-import base64
 import time
-from kali_brain import get_kali_response, stream_kali_typing
-from kali_voice import speak_text
-from kali_proactive import handle_proactive_triggers, trigger_error_report
+from datetime import datetime
 
 # --- KALI Constants ---
 AVATAR_DIR = os.path.dirname(__file__)
 
-def get_base64_img(image_path):
-    if os.path.exists(image_path):
-        with open(image_path, "rb") as img_file:
-            return base64.b64encode(img_file.read()).decode()
-    return None
-
-def render_ai_avatar(context="General Research"):
-    """
-    KALI CORE :: Advanced Kinetic AI Avatar Renderer (V5.2)
-    Now featuring multi-modal intelligence and proactive logic.
-    """
-    
-    # 1. Initialize Session States for KALI
-    if "kali_message" not in st.session_state:
-        st.session_state.kali_message = "KALI Core Ready. Initiate research nodes."
-    if "kali_status" not in st.session_state:
-        st.session_state.kali_status = "idle"
-    if "kali_confidence" not in st.session_state:
-        st.session_state.kali_confidence = 100
-    if "kali_history_log" not in st.session_state:
-        st.session_state.kali_history_log = []
-    if "kali_mute" not in st.session_state:
-        st.session_state.kali_mute = False
-        
-    # 2. Inject Cognitive Design System (CSS)
+def inject_kali_styles():
+    """Injects high-end glassmorphism and kinetic CSS for KALI."""
     css_path = os.path.join(AVATAR_DIR, "style.css")
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-            
-    # 3. Load Avatar Asset (Holographic Neural Orb)
-    asset_path = os.path.join(AVATAR_DIR, "assets", "premium_avatar.png")
-    b64_img = get_base64_img(asset_path)
-    img_tag = f'<img src="data:image/png;base64,{b64_img}" alt="KALI">' if b64_img else '<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N2NncwZ3JtcmN0Ym15bm15bm15bm15bm15bm1/l0HlRnAWXjnBYQV7W/giphy.gif" alt="KALI Offline">'
+    else:
+        # Fallback inline basic styles if file is missing (to prevent complete breakdown)
+        st.markdown("""
+            <style>
+                .avatar-container { background: #000; color: #fff; padding: 20px; border-radius: 10px; }
+            </style>
+        """, unsafe_allow_html=True)
 
-    # 4. Handle Proactive Triggers (App Load, Idle detection etc)
-    handle_proactive_triggers()
+def render_avatar(state="idle", message="System Ready.", confidence=100, collapsed=False):
+    """
+    Renders KALI's visual core based on state, message, and confidence.
+    Includes a 'collapsed' mode for a minimal HUD.
+    """
+    inject_kali_styles()
     
-    # 5. UI Layout - The KALI Panel
-    with st.container():
-        # Outer Class for states (idle, thinking, etc.)
-        status_class = f"status-{st.session_state.kali_status}"
-        
-        # HTML RENDER
+    # Init Session States
+    if "kali_log_history" not in st.session_state:
+        st.session_state.kali_log_history = []
+    if "kali_collapsed" not in st.session_state:
+        st.session_state.kali_collapsed = collapsed
+
+    # Update Log if message is new
+    if message and (not st.session_state.kali_log_history or st.session_state.kali_log_history[-1]['text'] != message):
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        st.session_state.kali_log_history.append({"time": timestamp, "text": message, "conf": confidence})
+        if len(st.session_state.kali_log_history) > 20: st.session_state.kali_log_history.pop(0)
+
+    # 1. THE COLLAPSIBLE TOGGLE (Invisible but fixed position)
+    if st.button("🔄 Toggle KALI HUD", key="kali_hud_toggle", use_container_width=True):
+        st.session_state.kali_collapsed = not st.session_state.kali_collapsed
+        st.rerun()
+
+    # 2. Minimalist HUD Mode (60px Orb)
+    if st.session_state.kali_collapsed:
+        status_class = f"status-{state}"
         st.markdown(f"""
-        <div class="avatar-container {status_class}">
-            <div class="particle-drift"></div>
-            <div class="avatar-orb">
-                <div class="orb-pulse"></div>
-                {img_tag}
-            </div>
-            <div class="status-label">{st.session_state.kali_status} mode :: sync active</div>
-            
-            <!-- Typewriter Speech Bubble -->
-            <div id="kali-speech-root" class="ai-speech-bubble">
-                <p style="font-size:0.6rem; color:var(--kali-blue); font-family:'JetBrains Mono'; margin-bottom:8px; opacity:0.6;">
-                    >> KALI_OS::{context.upper()} // L-PK
-                </p>
-                <div id="kali-text-placeholder">
-                    <span class="kinetic-reveal">{st.session_state.kali_message}</span>
-                    <span class="caret-pulse"></span>
-                </div>
-            </div>
-            
-            <!-- Confidence Meter -->
-            <div class="confidence-bar-container">
-                <div class="confidence-fill" style="width: {st.session_state.kali_confidence}%;"></div>
-            </div>
-            <p style="font-size:0.55rem; color:gray; text-align:right; margin-top:5px;">CONFIDENCE: {st.session_state.kali_confidence}%</p>
-            
-            <!-- Micro-Log -->
-            <div class="micro-log">
-                {''.join([f'<div>- {log}</div>' for log in st.session_state.kali_history_log[-5:]])}
-            </div>
+        <div class="kali-hud-mini {status_class}">
+            <div class="neural-orb-mini"></div>
+            <div class="mini-tag">KALI_OS :: ACTIVE</div>
         </div>
         """, unsafe_allow_html=True)
-        
-        # 6. Interaction Controls (Mute/Chat/Voice)
-        col_mute, col_voice, col_input = st.columns([1, 1, 6])
-        
-        with col_mute:
-            if st.button("🔇" if st.session_state.kali_mute else "🔊"):
-                st.session_state.kali_mute = not st.session_state.kali_mute
-                st.rerun()
-                
-        with col_voice:
-            # Placeholder for voice input via streamlit-audiorecorder
-            # In real usage, st_audiorecorder() would go here
-            st.button("🎙️")
+        return # Exit early for minimal view
 
-        with col_input:
-            chat_input = st.text_input("Transmit Command...", placeholder="Ask KALI about QGA or Portfolio Optimization", key="kali_chat_input", label_visibility="collapsed")
-            
-            # Simple Keyboard Shortcut handling (K to focus via streamlit usually needs JS or hacky methods)
-            
-        # 7. Response Logic (Brain + Voice + Typewriter)
-        if chat_input and chat_input != st.session_state.get("last_chat", ""):
-            st.session_state.last_chat = chat_input
-            st.session_state.kali_status = "thinking"
-            st.rerun() # Shift to thinking immediately
+    # 3. Full Render (Phase 2 Component structure)
+    status_class = f"status-{state}"
+    st.markdown(f"""
+    <div class="kali-visual-framework {status_class}">
+        <div class="orb-platform">
+            <div class="orb-aura-glow"></div>
+            <div class="neural-orb">
+                <div class="orb-core"></div>
+                <div class="orb-ring ring-1"></div>
+                <div class="orb-ring ring-2"></div>
+            </div>
+            <div class="status-label-container">
+                <span class="pulse-dot"></span>
+                <span class="status-text">{state.upper()} MODE</span>
+            </div>
+        </div>
+        <div class="speech-bubble-glass">
+            <div class="speech-header"><span class="header-tag">KALI_FEED_V52</span><span class="header-sync">STABLE</span></div>
+            <div class="typewriter-body"><p class="typewriter-text">{message}</p></div>
+        </div>
+        <div class="metrics-panel">
+            <div class="metric-header"><span>COGNITIVE CONFIDENCE</span><span>{confidence}%</span></div>
+            <div class="meter-track"><div class="meter-fill" style="width: {confidence}%;"></div></div>
+        </div>
+        <div class="hud-labels">
+            <span class="kbd-hint">Press K to focus KALI input</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Thinking Transition (Processing response)
-    if st.session_state.kali_status == "thinking":
-        response = get_kali_response(st.session_state.kali_chat_input, current_context=context)
-        st.session_state.kali_message = response
-        st.session_state.kali_status = "speaking"
-        st.session_state.kali_history_log.append(response)
-        st.rerun()
+    # 4. KALI History Log (Persistent Expander)
+    with st.expander("📝 KALI SENSORY BACKLOG", expanded=False):
+        for entry in reversed(st.session_state.kali_log_history):
+            st.markdown(f"**[{entry['time']}]** {entry['text']} *(Confidence: {entry['conf']}% )*")
 
-    # Speaking Transition (Actioning speech/typewriter)
-    if st.session_state.kali_status == "speaking":
-        # Note: In Streamlit, rendering speech and typewriter simultaneously is tricky.
-        # We start the speech-audio hidden while the typewriter reveals text.
-        speak_text(st.session_state.kali_message, st.empty())
-        # Placeholder for streaming typewriter (requires a specific UI container)
-        # For simplicity in this demo, we'll reset status to idle after speech.
-        time.sleep(2) # Mocking speech duration
-        st.session_state.kali_status = "idle"
-        st.rerun()
-
-def explain_this(component_name, data_summary):
-    """Triggered by 'Explain This' buttons below charts."""
+def explain_chart(chart_title, data_summary):
+    """Triggered by 'Ask KALI' button under charts."""
+    from kali_brain import ask_kali
     st.session_state.kali_status = "thinking"
-    st.session_state.kali_message = get_kali_response(f"Explain this {component_name} in 2 witty sentences: {data_summary}")
-    st.session_state.kali_status = "speaking"
+    msg = "".join(list(ask_kali(f"Explain this {chart_title} chart in 2 precise witty sentences: {data_summary}")))
+    st.session_state.kali_message = msg
     st.rerun()
+
+# Exporting for Mission_Control
+__all__ = ['render_avatar', 'explain_chart']

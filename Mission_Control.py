@@ -15,21 +15,31 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Path Integration Hub ---
-def add_path(folder):
-    p = os.path.abspath(folder)
-    if p not in sys.path: sys.path.append(p)
-
 add_path("Shared_Core")
 add_path("Shared_AI_Avatar")
 add_path("Assignment_1")
 add_path("Assignment_2")
 
+# --- KALI Session Initialization ---
+def init_kali_session():
+    """Ensures KALI's cognitive states are initialized in the correct order."""
+    if "kali_status" not in st.session_state: st.session_state.kali_status = "idle"
+    if "kali_message" not in st.session_state: st.session_state.kali_message = "KALI Core Ready. Portals Synchronized."
+    if "kali_query" not in st.session_state: st.session_state.kali_query = None
+    if "kali_muted" not in st.session_state: st.session_state.kali_muted = False
+    if "last_interaction" not in st.session_state: st.session_state.last_interaction = time.time()
+    if "kali_history" not in st.session_state: st.session_state.kali_history = []
+    if "kali_best_sharpe" not in st.session_state: st.session_state.kali_best_sharpe = 0.0
+
+init_kali_session()
+
 # --- Import Components ---
-from avatar import render_ai_avatar
+from avatar import render_avatar, explain_chart
 from theory_docs import run_theoretical_info, run_project_docs
 from avatar_specs import run_avatar_specs
-from kali_proactive import run_kali_walkthrough, generate_evaluator_report
+from kali_proactive import check_proactive_triggers, safe_run
+from kali_brain import ask_kali, get_confidence
+from kali_voice import listen, speak
 
 import Assignment_1.app_module as a1
 import Assignment_2.app_module as a2
@@ -64,43 +74,71 @@ with st.sidebar:
     nav = st.radio("Access Level", ["PORTFOLIO OPTIMIZER (A2)", "TECHNICAL REPORT (A1)", "KALI AVATAR CORE", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
     
     st.markdown("---")
-    st.markdown("### 🛠️ COGNITIVE CONTROLS")
-    
-    # Competition / Demo Mode
-    if st.button("🚀 INITIATE DEMO WALKTHROUGH"):
-        run_kali_walkthrough()
-        
-    # Evaluator Report
-    report_text = generate_evaluator_report()
-    st.download_button("📄 GENERATE EVALUATOR REPORT", data=report_text, file_name="KALI_Mission_Report.txt")
+    st.markdown("### 🛠️ KALI VOCABULARY")
+    with st.expander("Hover for KALI Definitions"):
+        st.button("Sharpe Ratio", help="KALI: The mathematical reward-to-variability ratio. Higher = More efficient evolution.", use_container_width=True)
+        st.button("Ry-Gate", help="KALI: My primary quantum rotation actuator. It shifts our probability vectors toward the global optima.", use_container_width=True)
+        st.button("PEAS Framework", help="KALI: My DNA—Performance, Environment, Actuators, Sensors. It's how I perceive and act.", use_container_width=True)
     
     st.markdown("---")
     st.info("KALI OS Status: **NOMINAL**")
 
 # --- Persistent Persistence Layer (Header Section) ---
+# Feature 5.0: Proactive Triggers
+check_proactive_triggers(current_page=nav)
+
 st.markdown("<div style='text-align:right;'><span class='status-capsule'>KALI NEXUS SYNC :: ONLINE [L-PK]</span></div>", unsafe_allow_html=True)
 
 header_col1, header_col2 = st.columns([1.5, 2.5])
 
 with header_col1:
-    # Context Selection for Avatar
-    current_ctx = nav.split()[-1]
-    render_ai_avatar(context=current_ctx)
+    # Feature 2.0 & 6.0: KALI HUD & Avatar
+    render_avatar(
+        state=st.session_state.get("kali_status", "idle"),
+        message=st.session_state.get("kali_message", "KALI Core Ready."),
+        confidence=get_confidence()
+    )
+    
+    # Feature 4.0: Voice Control HUD
+    v_col1, v_col2 = st.columns(2)
+    with v_col1:
+        if st.button("🎙️ LISTEN", use_container_width=True):
+            transcription = listen()
+            if transcription: st.session_state.kali_query = transcription
+    with v_col2:
+        mute_label = "🔇 UNMUTE" if st.session_state.get("kali_muted") else "🔊 MUTE"
+        if st.button(mute_label, use_container_width=True):
+            st.session_state.kali_muted = not st.session_state.get("kali_muted", False)
+            st.rerun()
 
 with header_col2:
-    # Feature 2.3 & 2.4: Google-Tier Geometric Branding
-    st.markdown(f"<div style='margin-top:0px;'><p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V5.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Intelligence Portal :: KALI AI OS</p></div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V5.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Intelligence Portal :: KALI AI OS</p>", unsafe_allow_html=True)
     
-    # Persistent Chat Hint
-    st.caption("Press 'K' to focus command input at any time.")
+    # Feature 6.2: Persistent KALI Chat Input
+    user_query = st.chat_input("Transmit Command (Press K to focus)...", key="kali_chat_main_input")
+    
+    # If speech or text input exists, process it
+    final_query = user_query or st.session_state.get("kali_query")
+    if final_query:
+        st.session_state.kali_status = "thinking"
+        st.session_state.kali_query = None # Reset
+        st.session_state.kali_message = ""
+        # Process streaming output
+        for token in ask_kali(final_query, context=nav):
+            st.session_state.kali_message += token
+        
+        # After text finishes, speak it
+        speak(st.session_state.kali_message)
+        st.session_state.kali_status = "idle"
+        st.rerun()
 
 st.markdown("<hr style='border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;'>")
 
 # --- Content Hub ---
 if nav == "TECHNICAL REPORT (A1)":
-    a1.run_assignment_1()
+    safe_run(a1.run_assignment_1)
 elif nav == "PORTFOLIO OPTIMIZER (A2)":
-    a2.run_assignment_2()
+    safe_run(a2.run_assignment_2)
 elif nav == "KALI AVATAR CORE":
     run_avatar_specs()
 elif nav == "THEORETICAL CONCEPTS":
