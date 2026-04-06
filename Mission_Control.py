@@ -2,21 +2,11 @@ import streamlit as st
 import sys
 import os
 import time
+from datetime import datetime
 
-# --- PADDING NUCLEAR FIX (FIRST ACTION) ---
-st.markdown("""
-    <style>
-        [data-testid="stHeader"] {display: none !important;}
-        .block-container {padding-top: 0rem !important; padding-bottom: 0rem !important; margin-top: -2.5rem !important;}
-        .stAppDeployButton {display:none !important;}
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        .stMain { margin-top: 0px !important; padding-top: 0px !important; }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- Path Integration Hub ---
+# --- Path Integration Hub (MUST BE AT TOP) ---
 def add_path(folder):
+    """Integrates secondary research modules into the runtime path."""
     p = os.path.abspath(folder)
     if p not in sys.path: sys.path.append(p)
 
@@ -24,6 +14,18 @@ add_path("Shared_Core")
 add_path("Shared_AI_Avatar")
 add_path("Assignment_1")
 add_path("Assignment_2")
+
+# --- Import Components ---
+# These imports rely on the paths added above
+from avatar import render_avatar, explain_chart
+from theory_docs import run_theoretical_info, run_project_docs
+from avatar_specs import run_avatar_specs
+from kali_proactive import check_proactive_triggers, safe_run
+from kali_brain import ask_kali, get_confidence
+from kali_voice import listen, speak
+
+import Assignment_1.app_module as a1
+import Assignment_2.app_module as a2
 
 # --- KALI Session Initialization ---
 def init_kali_session():
@@ -38,17 +40,6 @@ def init_kali_session():
 
 init_kali_session()
 
-# --- Import Components ---
-from avatar import render_avatar, explain_chart
-from theory_docs import run_theoretical_info, run_project_docs
-from avatar_specs import run_avatar_specs
-from kali_proactive import check_proactive_triggers, safe_run
-from kali_brain import ask_kali, get_confidence
-from kali_voice import listen, speak
-
-import Assignment_1.app_module as a1
-import Assignment_2.app_module as a2
-
 # --- Page Config ---
 st.set_page_config(
     page_title="KALI OS :: MISSION CONTROL",
@@ -56,6 +47,18 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# --- PADDING NUCLEAR FIX ---
+st.markdown("""
+    <style>
+        [data-testid="stHeader"] {display: none !important;}
+        .block-container {padding-top: 0rem !important; padding-bottom: 0rem !important; margin-top: -2.5rem !important;}
+        .stAppDeployButton {display:none !important;}
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        .stMain { margin-top: 0px !important; padding-top: 0px !important; }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- Google-Level Global Styling ---
 st.markdown("""
