@@ -26,9 +26,7 @@ def on_optimization_complete(result_dict):
         msg = f"Incredible. This new portfolio evolution achieved a Sharpe ratio of {current_sharpe:.2f}, surpassing our previous benchmark. Convergence is nearly 100%."
     else:
         st.session_state.kali_status = "eureka"
-        # Generate 2-sentence insight using KALI's brain
-        query = f"The QGA optimization is complete with a Sharpe of {current_sharpe:.2f}. Give a witty 2-sentence insight."
-        msg = "".join(list(ask_kali(query, context="A2")))
+        msg = "".join(list(ask_kali(f"The QGA optimization is complete with a Sharpe of {current_sharpe:.2f}.", context="A2")))
         
     st.session_state.kali_message = msg
     st.session_state.last_interaction = time.time()
@@ -56,6 +54,7 @@ def check_proactive_triggers(current_page="Home"):
     # 1. Boot Greeting (First Load)
     if "kali_booted" not in st.session_state:
         st.session_state.kali_booted = True
+        st.session_state.kali_ready = True
         greeting = get_time_greeting()
         st.session_state.kali_message = f"{greeting} KALI Core Online. Quantum systems are synchronized. What are we solving today?"
         st.session_state.last_interaction = now
@@ -92,4 +91,19 @@ def check_proactive_triggers(current_page="Home"):
         ]
         st.session_state.kali_message = random.choice(nudges)
         st.session_state.kali_status = "warning"
-        # We don't rerun here to avoid infinite loops, just update msg for next render
+def run_kali_walkthrough():
+    """Triggers an automated demo flow of KALI OS."""
+    steps = [
+        ("PORTFOLIO OPTIMIZER (A2)", "Let's begin with the active research. Node A2 is analyzing local stock volatility."),
+        ("TECHNICAL REPORT (A1)", "Now, reviewing the mathematical logic behind the QGA evolution in Node A1."),
+        ("THEORETICAL CONCEPTS", "And finally, let's verify our theoretical proofs in the Knowledge Vault."),
+        ("KALI AVATAR CORE", "Systems check complete. All nodes synchronized.")
+    ]
+    
+    st.info("KALI: Initiating biological orientation protocol.")
+    for page, msg in steps:
+        time.sleep(1.5)
+        st.session_state.kali_current_page = page
+        st.session_state.kali_message = msg
+        st.session_state.kali_status = "thinking"
+        st.rerun()

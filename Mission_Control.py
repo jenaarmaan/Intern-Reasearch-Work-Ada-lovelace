@@ -20,7 +20,7 @@ add_path("Assignment_2")
 from avatar import render_avatar, explain_chart
 from theory_docs import run_theoretical_info, run_project_docs
 from avatar_specs import run_avatar_specs
-from kali_proactive import check_proactive_triggers, safe_run
+from kali_proactive import check_proactive_triggers, safe_run, run_kali_walkthrough
 from kali_brain import ask_kali, get_confidence
 from kali_voice import listen, speak
 
@@ -48,7 +48,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- PADDING NUCLEAR FIX ---
+# --- PADDING NUCLEAR FIX & SCANLINES ---
 st.markdown("""
     <style>
         [data-testid="stHeader"] {display: none !important;}
@@ -120,31 +120,69 @@ st.markdown("""
 
 # --- Navigation Nexus ---
 with st.sidebar:
-    st.markdown("<h1 style='color:#00f2ff; font-size: 2.5rem; text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);'>KALI</h1><p style='font-size:0.4rem; letter-spacing:3px; opacity:0.7; font-weight:700;'>KINETIC AGENTIC LEARNING INTELLIGENCE</p>", unsafe_allow_html=True)
-    st.markdown("---")
+    st.markdown("<h1 style='color:#00f2ff; font-size: 2.2rem; text-shadow: 0 0 20px rgba(0, 242, 255, 0.4); letter-spacing:0.15em;'>KALI</h1><p style='font-size:0.45rem; letter-spacing:4px; opacity:0.8; font-weight:700; margin-bottom:40px;'>KINETIC AGENTIC LEARNING INTELLIGENCE</p>", unsafe_allow_html=True)
     
-    st.markdown("### 🧬 SYSTEM NODES")
-    nav = st.radio("Access Level", ["PORTFOLIO OPTIMIZER (A2)", "TECHNICAL REPORT (A1)", "KALI AVATAR CORE", "THEORETICAL CONCEPTS", "PROJECT DOCUMENTATION"])
+    st.markdown("<div class='sidebar-section-header'>SYSTEM NODES</div>", unsafe_allow_html=True)
+    nav_options = {
+        "PORTFOLIO OPTIMIZER (A2)": "teal",
+        "TECHNICAL REPORT (A1)": "gray",
+        "KALI AVATAR CORE": "red",
+        "THEORETICAL CONCEPTS": "gray",
+        "PROJECT DOCUMENTATION": "gray"
+    }
     
-    st.markdown("---")
-    st.markdown("### 🛠️ KALI VOCABULARY")
-    with st.expander("Hover for KALI Definitions"):
+    # Custom Radio with Coded Dots
+    nav = st.radio("Access Level", list(nav_options.keys()), label_visibility="collapsed")
+    
+    st.markdown("<div class='sidebar-section-header'>COGNITIVE CONTROLS</div>", unsafe_allow_html=True)
+    if st.button("🚀 SYNC WALKTHROUGH", use_container_width=True):
+        run_kali_walkthrough()
+    
+    st.markdown("<div class='sidebar-section-header'>KALI VOCABULARY</div>", unsafe_allow_html=True)
+    with st.expander("Hover for AI Glossary"):
         st.button("Sharpe Ratio", help="KALI: The mathematical reward-to-variability ratio. Higher = More efficient evolution.", use_container_width=True)
         st.button("Ry-Gate", help="KALI: My primary quantum rotation actuator. It shifts our probability vectors toward the global optima.", use_container_width=True)
-        st.button("PEAS Framework", help="KALI: My DNA—Performance, Environment, Actuators, Sensors. It's how I perceive and act.", use_container_width=True)
     
     st.markdown("---")
-    st.info("KALI OS Status: **NOMINAL**")
+    status_pulse = "nominal" if st.session_state.kali_status == "idle" else "alert"
+    st.markdown(f"<div class='status-capsule-{status_pulse}'>KALI OS STATUS :: {st.session_state.kali_status.upper()}</div>", unsafe_allow_html=True)
 
-# --- Persistent Persistence Layer (Header Section) ---
+# --- Top Header Bar ---
+header_html = f"""
+<div class="mission-header-v52">
+    <div class="header-left">MISSION MONITOR V5.2</div>
+    <div class="header-center">NEXUS_BREADCRUMB :: {nav}</div>
+    <div class="header-right">
+        <span class="nexus-sync-pill">KALI NEXUS SYNC :: ONLINE <span class="sync-dot"></span></span>
+    </div>
+</div>
+"""
+st.markdown(header_html, unsafe_allow_html=True)
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 # Feature 5.0: Proactive Triggers
 check_proactive_triggers(current_page=nav)
 
-st.markdown("<div style='text-align:right;'><span class='status-capsule'>KALI NEXUS SYNC :: ONLINE [L-PK]</span></div>", unsafe_allow_html=True)
+# Feature 6.0: Keyboard Tooltip & K-Shortcut Support
+st.markdown("""
+<script>
+const doc = window.parent.document;
+doc.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === 'k') {
+        const input = doc.querySelector('textarea[data-testid="stChatInputTextArea"]');
+        if (input) input.focus();
+    }
+});
+</script>
+""", unsafe_allow_html=True)
 
-header_col1, header_col2 = st.columns([1.5, 2.5])
+# --- Main Layout (3 Columns: 15 / 45 / 40) ---
+layout_col1, layout_col2, layout_col3 = st.columns([0.15, 0.45, 0.40])
 
-with header_col1:
+with layout_col1:
+    st.empty() # Gutter for sidebar transitions
+
+with layout_col2:
     # Feature 2.0 & 6.0: KALI HUD & Avatar
     render_avatar(
         state=st.session_state.get("kali_status", "idle"),
@@ -152,51 +190,47 @@ with header_col1:
         confidence=get_confidence()
     )
     
-    # Feature 4.0: Voice Control HUD
+    # Feature 4.0: Voice Controls
     v_col1, v_col2 = st.columns(2)
     with v_col1:
         if st.button("🎙️ LISTEN", use_container_width=True):
-            transcription = listen()
-            if transcription: st.session_state.kali_query = transcription
+             from kali_voice import listen; st.session_state.kali_query = listen()
     with v_col2:
-        mute_label = "🔇 UNMUTE" if st.session_state.get("kali_muted") else "🔊 MUTE"
+        mute_label = "🔇 UNMUTE" if st.session_state.kali_muted else "🔊 MUTE"
         if st.button(mute_label, use_container_width=True):
-            st.session_state.kali_muted = not st.session_state.get("kali_muted", False)
+            st.session_state.kali_muted = not st.session_state.kali_muted
             st.rerun()
 
-with header_col2:
-    st.markdown(f"<p style='font-size:0.7rem; color:var(--neon-blue); letter-spacing:4px;'>MISSION MONITOR V5.2</p><h1 style='font-size: 3.5rem; margin-bottom:0;'>{nav}</h1><p style='font-size: 1.1rem; opacity: 0.7; letter-spacing: 1px;'>Unified Intelligence Portal :: KALI AI OS</p>", unsafe_allow_html=True)
-    
+with layout_col3:
     # Feature 6.2: Persistent KALI Chat Input
-    user_query = st.chat_input("Transmit Command (Press K to focus)...", key="kali_chat_main_input")
+    query = st.chat_input("TRANSMIT COMMAND [ PRESS K TO SCAN ]...", key="kali_main_chat")
     
-    # If speech or text input exists, process it
-    final_query = user_query or st.session_state.get("kali_query")
-    if final_query:
-        st.session_state.kali_status = "thinking"
-        st.session_state.kali_query = None # Reset
+    if query or st.session_state.kali_query:
+        final_query = query or st.session_state.kali_query
+        st.session_state.kali_query = None
         st.session_state.kali_message = ""
-        # Process streaming output
+        
         for token in ask_kali(final_query, context=nav):
             st.session_state.kali_message += token
         
-        # After text finishes, speak it
-        speak(st.session_state.kali_message)
+        from kali_voice import speak; speak(st.session_state.kali_message)
         st.session_state.kali_status = "idle"
         st.rerun()
 
-st.markdown("<hr style='border-top: 1px solid rgba(255,255,255,0.05); margin: 20px 0;'>")
-
-# --- Content Hub ---
-if nav == "TECHNICAL REPORT (A1)":
-    safe_run(a1.run_assignment_1)
-elif nav == "PORTFOLIO OPTIMIZER (A2)":
-    safe_run(a2.run_assignment_2)
-elif nav == "KALI AVATAR CORE":
-    run_avatar_specs()
-elif nav == "THEORETICAL CONCEPTS":
-    run_theoretical_info()
-elif nav == "PROJECT DOCUMENTATION":
-    run_project_docs()
+    st.markdown(f"## {nav}")
+    
+    # Page Routing
+    if nav == "KALI AVATAR CORE":
+        from avatar import render_system_status
+        run_avatar_specs()
+        render_system_status()
+    elif nav == "TECHNICAL REPORT (A1)":
+        safe_run(a1.run_assignment_1)
+    elif nav == "PORTFOLIO OPTIMIZER (A2)":
+        safe_run(a2.run_assignment_2)
+    elif nav == "THEORETICAL CONCEPTS":
+        run_theoretical_info()
+    elif nav == "PROJECT DOCUMENTATION":
+        run_project_docs()
 
 st.markdown("<br><br><br><div style='text-align:center; font-size:0.75rem; color:gray; opacity: 0.5; padding: 40px; border-top:1px solid rgba(255,255,255,0.03);'>KALI AI NETWORKS | KINETIC AGENTIC LEARNING INTELLIGENCE | ALL SYSTEMS NOMINAL</div>", unsafe_allow_html=True)

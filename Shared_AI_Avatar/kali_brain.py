@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import random
 import time
+from datetime import datetime
 from groq import Groq
 
 # --- KALI CONFIG ---
@@ -111,7 +112,11 @@ def ask_kali(user_query, context="General"):
     system_prompt = f"{KALI_MASTER_IDENTITY}\nCONTEXT_NODE: {module_context}"
     
     # 3. Add user input to history
-    st.session_state.kali_history.append({"role": "user", "content": user_query})
+    st.session_state.kali_history.append({
+        "role": "user", 
+        "content": user_query,
+        "timestamp": datetime.now().strftime("%H:%M:%S")
+    })
     
     # 4. Attempt API Call
     full_response = ""
@@ -136,8 +141,14 @@ def ask_kali(user_query, context="General"):
                 yield token
                 
             # Finalize Response
-            st.session_state.kali_history.append({"role": "assistant", "content": full_response})
-            st.session_state.kali_last_confidence = calc_confidence(full_response)
+            conf = calc_confidence(full_response)
+            st.session_state.kali_history.append({
+                "role": "assistant", 
+                "content": full_response,
+                "timestamp": datetime.now().strftime("%H:%M:%S"),
+                "confidence": conf
+            })
+            st.session_state.kali_last_confidence = conf
             return
             
         except Exception as e:
@@ -147,8 +158,14 @@ def ask_kali(user_query, context="General"):
     # 5. Fallback logic if client or API fails
     time.sleep(1) # Mock thinking
     fallback_text = get_fallback(user_query)
-    st.session_state.kali_history.append({"role": "assistant", "content": fallback_text})
-    st.session_state.kali_last_confidence = calc_confidence(fallback_text)
+    conf = calc_confidence(fallback_text)
+    st.session_state.kali_history.append({
+        "role": "assistant", 
+        "content": fallback_text,
+        "timestamp": datetime.now().strftime("%H:%M:%S"),
+        "confidence": conf
+    })
+    st.session_state.kali_last_confidence = conf
     
     for token in fallback_text.split():
         yield token + " "
