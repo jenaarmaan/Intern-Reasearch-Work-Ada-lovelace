@@ -91,6 +91,7 @@ def check_proactive_triggers(current_page="Home"):
         ]
         st.session_state.kali_message = random.choice(nudges)
         st.session_state.kali_status = "warning"
+
 def run_kali_walkthrough():
     """Triggers an automated demo flow of KALI OS."""
     steps = [
