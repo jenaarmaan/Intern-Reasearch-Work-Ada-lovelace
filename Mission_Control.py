@@ -25,6 +25,7 @@ try:
     from kali_proactive import check_proactive_triggers, safe_run, run_kali_walkthrough
     from kali_brain import ask_kali, get_confidence
     from kali_voice import listen, speak
+    from kali_permissions import render_permission_sidebar, get_permission_pill
 except ImportError as e:
     st.error(f"KALI System Node Sync Failure: {e}")
     st.stop()
@@ -32,24 +33,32 @@ except ImportError as e:
 import Assignment_1.app_module as a1
 import Assignment_2.app_module as a2
 
+from quantum_curriculum import CURRICULUM
+
 # --- KALI Session Initialization ---
 def init_kali_session():
     """Ensures KALI's cognitive states are initialized in the correct order."""
     if "kali_status" not in st.session_state: st.session_state.kali_status = "idle"
-    if "kali_message" not in st.session_state: st.session_state.kali_message = "KALI Core Ready. Portals Synchronized."
+    if "kali_message" not in st.session_state: 
+        st.session_state.kali_message = "Hello! I am KALI, your quantum computing guide. Which topic would you like to explore today?"
     if "kali_query" not in st.session_state: st.session_state.kali_query = None
     if "kali_muted" not in st.session_state: st.session_state.kali_muted = False
     if "last_interaction" not in st.session_state: st.session_state.last_interaction = time.time()
     if "kali_history" not in st.session_state: st.session_state.kali_history = []
     if "kali_best_sharpe" not in st.session_state: st.session_state.kali_best_sharpe = 0.0
     if "kali_ready" not in st.session_state: st.session_state.kali_ready = False
+    
+    # Curriculum State
+    if "current_topic" not in st.session_state: st.session_state.current_topic = None
+    if "topic_progress" not in st.session_state: 
+        st.session_state.topic_progress = {k: "gray" for k in CURRICULUM.keys()} # gray, blue, green
 
 init_kali_session()
 
 # --- Page Config ---
 st.set_page_config(
-    page_title="KALI — Quantum Learning Assistant",
-    page_icon="🤖",
+    page_title="Quantum Learning with KALI",
+    page_icon="⚛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -64,34 +73,58 @@ load_css("Shared_AI_Avatar/style.css")
 # Navigation
 with st.sidebar:
     st.title("KALI")
-    st.caption("Quantum Learning Assistant")
+    st.caption("Your Quantum Computing Teacher")
     
-    st.sidebar.header("Navigation")
+    # Learning Progress Header
+    completed = list(st.session_state.topic_progress.values()).count("green")
+    st.sidebar.markdown(f"**Learning Progress:** {completed}/{len(CURRICULUM)} Topics")
+    st.sidebar.progress(completed / len(CURRICULUM))
+    
+    st.sidebar.header("🎓 Curriculum")
+    
+    # Topic Selector Logic
+    selected_topic_key = None
+    for key, topic in CURRICULUM.items():
+        dot_color = st.session_state.topic_progress[key]
+        emoji = "⚪" if dot_color == "gray" else "🔵" if dot_color == "blue" else "🟢"
+        if st.sidebar.button(f"{emoji} {topic['title']}", key=f"btn_{key}", use_container_width=True):
+            selected_topic_key = key
+            st.session_state.current_topic = key
+            st.session_state.topic_progress[key] = "blue"
+            st.session_state.kali_message = topic['explanation'].split('.')[0] + "." # First sentence
+            st.session_state.kali_status = "idle"
+            # Rerunning to update main area and KALI
+            st.rerun()
+
+    st.sidebar.header("🗺️ Advanced Research")
     nav_options = {
-        "PORTFOLIO OPTIMIZER (A2)": "teal",
+        "QUANTUM LEARNING HOME": "teal",
+        "PORTFOLIO OPTIMIZER (A2)": "gray",
         "TECHNICAL REPORT (A1)": "gray",
         "KALI AVATAR CORE": "red",
         "THEORETICAL CONCEPTS": "gray",
         "PROJECT DOCUMENTATION": "gray"
     }
-    nav = st.radio("Select Page", list(nav_options.keys()), label_visibility="collapsed")
+    nav = st.radio("Select Portal", list(nav_options.keys()), label_visibility="collapsed")
     
-    st.sidebar.header("Controls")
-    if st.button("🚀 Sync Walkthrough", use_container_width=True):
-        run_kali_walkthrough()
+    # Feature 4.0: Permission Sidebar
+    render_permission_sidebar()
     
     st.sidebar.header("AI Glossary")
     with st.expander("Terms"):
-        st.button("Sharpe Ratio", help="KALI: The mathematical reward-to-variability ratio.", use_container_width=True)
-        st.button("Ry-Gate", help="KALI: My primary quantum rotation actuator.", use_container_width=True)
+        st.button("Qubit", help="The basic unit of quantum information.", use_container_width=True)
+        st.button("Entanglement", help="A spooky connection between particles.", use_container_width=True)
     
     st.markdown("---")
     status_type = "nominal" if st.session_state.kali_status == "idle" else "alert"
     st.markdown(f"<div class='status-capsule status-{status_type}'>STATUS: {st.session_state.kali_status.upper()}</div>", unsafe_allow_html=True)
 
 # Main Header
-st.title("KALI — Quantum Learning Assistant")
-st.info(f"Currently viewing: {nav}")
+h_col1, h_col2 = st.columns([0.8, 0.2])
+with h_col1:
+    st.title("Quantum Learning with KALI")
+with h_col2:
+    st.markdown(f"<div style='text-align: right; padding-top: 25px;'>{get_permission_pill('voice')}</div>", unsafe_allow_html=True)
 
 # Feature 5.0: Proactive Triggers
 check_proactive_triggers(current_page=nav)
@@ -114,25 +147,53 @@ with layout_col1:
         if st.button(mute_label, use_container_width=True):
             st.session_state.kali_muted = not st.session_state.kali_muted
             st.rerun()
-
-with layout_col2:
-    query = st.chat_input("Ask KALI anything...", key="kali_main_chat")
     
+    # Chat logic
+    query = st.chat_input("Ask KALI about quantum computing...", key="kali_main_chat")
     if query or st.session_state.kali_query:
         final_query = query or st.session_state.kali_query
         st.session_state.kali_query = None
         st.session_state.kali_message = ""
         st.session_state.kali_status = "thinking"
-        
         for token in ask_kali(final_query, context=nav):
             st.session_state.kali_message += token
-        
         speak(st.session_state.kali_message)
         st.session_state.kali_status = "idle"
         st.rerun()
 
-    st.header(nav)
-    if nav == "KALI AVATAR CORE":
+with layout_col2:
+    if nav == "QUANTUM LEARNING HOME":
+        if st.session_state.current_topic:
+            topic = CURRICULUM[st.session_state.current_topic]
+            st.header(topic['title'])
+            st.write(topic['explanation'])
+            st.info(f"🇮🇳 **Indian Research Insight:** {topic['india_example']}")
+            
+            with st.expander("📝 Key Terms for this Lesson"):
+                for item in topic['key_terms']:
+                    st.write(f"- **{item['term']}**: {item['definition']}")
+            
+            st.subheader("🧠 Quick Quiz")
+            for idx, q_data in enumerate(topic['quiz']):
+                st.write(f"**Q{idx+1}: {q_data['q']}**")
+                choice = st.radio(f"Select Answer for Q{idx+1}:", q_data['options'], key=f"q_{st.session_state.current_topic}_{idx}")
+                if st.button(f"Check Answer Q{idx+1}", key=f"btn_check_{idx}"):
+                    if q_data['options'].index(choice) == q_data['correct']:
+                        st.success("Correct!")
+                        if idx == len(topic['quiz']) - 1:
+                            st.session_state.topic_progress[st.session_state.current_topic] = "green"
+                    else:
+                        st.error("Try again!")
+            
+            st.markdown("---")
+            st.caption(f"💡 {topic['fact']}")
+            
+        else:
+            st.subheader("Welcome to Your Quantum Journey!")
+            st.write("I am KALI, and I'm here to help you master the fundamentals of quantum computing. Choose a topic from the curriculum sidebar to begin our first lesson.")
+            st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Bloch_sphere.svg/1200px-Bloch_sphere.svg.png", caption="The Bloch Sphere: Visualizing a Qubit's possibilities.", width=400)
+
+    elif nav == "KALI AVATAR CORE":
         run_avatar_specs()
         render_system_status()
     elif nav == "TECHNICAL REPORT (A1)":
@@ -143,6 +204,9 @@ with layout_col2:
         run_theoretical_info()
     elif nav == "PROJECT DOCUMENTATION":
         run_project_docs()
+
+st.markdown("---")
+st.caption("KALI — Quantum Computing Education Platform | Built for National Quantum Mission Awareness")
 
 st.markdown("---")
 st.caption("KALI — Quantum Computing Education Platform | Built with Streamlit")

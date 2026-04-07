@@ -9,6 +9,8 @@ import speech_recognition as sr
 from audio_recorder_streamlit import audio_recorder
 from datetime import datetime
 
+from kali_permissions import check_permission
+
 # --- KALI Voice Config ---
 VOICE = "en-US-AriaNeural"
 RATE = "+10%"
@@ -51,6 +53,10 @@ def speak(text):
     """
     if st.session_state.kali_muted:
         return 0
+
+    # 1. Permission Check
+    if not check_permission("voice"):
+        return 0
     
     if st.session_state.is_speaking:
         st.session_state.voice_queue.append(text)
@@ -88,6 +94,11 @@ def listen():
     KALI Voice Input Engine.
     Uses audio_recorder_streamlit for UI and SpeechRecognition for transcription.
     """
+    # 1. Permission Check
+    if not check_permission("voice"):
+        st.info("No problem! You can use all features through text instead.")
+        return ""
+
     st.info("KALI Listening Node: Active. Click the microphone icon.")
     audio_bytes = audio_recorder(text="Listen", icon_size="2x")
     
@@ -114,6 +125,10 @@ def listen():
             if os.path.exists(tmp_path): os.remove(tmp_path)
     
     return ""
+
+def set_mute(muted_status: bool):
+    """Sets KALI's vocal suppression mode."""
+    st.session_state.kali_muted = muted_status
 
 def set_mute(muted_status: bool):
     """Sets KALI's vocal suppression mode."""
