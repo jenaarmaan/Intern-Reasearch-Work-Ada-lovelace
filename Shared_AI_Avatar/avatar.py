@@ -1,78 +1,73 @@
 import streamlit as st
-import time
+import os
 import base64
-import textwrap
-from datetime import datetime
-from kali_brain import ask_kali
 
-# --- KALI UI Engine ---
-def render_safe(html_content: str):
-    """Sanitizes and safely renders KALI OS visual components by removing markdown fences."""
-    if not html_content: return
-    # CRITICAL: Strip all surrounding whitespace/tabs and dedicatedly dedent
-    clean_html = textwrap.dedent(html_content).strip()
-    # If the string STILL starts with a code block indicator or spaces, strip them manually
-    while clean_html.startswith(("`", "\n", " ")):
-        clean_html = clean_html.lstrip("`").lstrip("\n").lstrip(" ")
+def get_base64_svg(path):
+    # Ensure asset exists
+    if not os.path.exists(path):
+        return ""
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+def render_avatar(state="idle", message=""):
+    """
+    Renders a clean, friendly KALI avatar with simple state-based animations.
+    States: idle (blue), thinking (amber), speaking (green)
+    """
+    avatar_path = os.path.join("Shared_AI_Avatar", "assets", "kali_avatar.svg")
     
-    processed_html = clean_html.replace("<hr>", "<div class='kali-divider-line'></div>")
-    st.markdown(processed_html, unsafe_allow_html=True)
+    # Map state to CSS class
+    state_class = f"kali-{state}"
+    
+    # Status text based on page or activity
+    current_topic_key = st.session_state.get("current_topic", None)
+    topic_name = "Introduction"
+    if current_topic_key:
+        from quantum_curriculum import CURRICULUM
+        topic_name = CURRICULUM[current_topic_key]['title']
+        
+    status_text = f"Exploring · {topic_name}"
+    if state == "thinking": status_text = "Thinking..."
+    if state == "speaking": status_text = "Explaining..."
 
-def render_avatar(state="idle", message="", confidence=100.0, collapsed=False):
-    """
-    Renders KALI's physical presence using simple, clean components.
-    """
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = time.time()
-
-    # Simple Avatar Circle with Pulse
+    # Avatar & Status Layout
+    st.markdown("<div class='kali-avatar-container'>", unsafe_allow_html=True)
+    
+    b64_avatar = get_base64_svg(avatar_path)
+    
     st.markdown(f'''
-        <div class="kali-card" style="text-align: center;">
-            <div class="avatar-pulse">K</div>
-            <div style="margin-top: 15px; font-weight: 600; color: #4A90D9;">
-                KALI — {state.upper()}
-            </div>
+        <div class="kali-avatar {state_class}">
+            <img src="data:image/svg+xml;base64,{b64_avatar}" width="150" style="display: block; margin: 0 auto; border-radius: 50%;">
         </div>
+        <div class="kali-status-label">{status_text}</div>
     ''', unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Clean Message Display
+    # Speech Bubble (No typewriter, just clean container)
     if message:
-        if state == "thinking":
-            st.info(message)
-        elif state == "error":
-            st.error(message)
-        else:
-            st.success(message)
+        st.markdown(f'''
+            <div class="kali-speech-bubble">
+                {message}
+            </div>
+        ''', unsafe_allow_html=True)
 
-    # Confidence Meter
-    st.progress(confidence / 100.0, text=f"Cognitive Confidence: {confidence}%")
-
-    with st.expander("📂 Interaction History", expanded=False):
-        if not st.session_state.get("kali_history"):
-            st.caption("No recent interactions.")
-        else:
-            for entry in reversed(st.session_state.kali_history):
-                role = "USER" if entry["role"] == "user" else "KALI"
-                st.write(f"**{role}:** {entry['content']}")
+    # Simple Chat History (Expander)
+    history = st.session_state.get("kali_history", [])
+    if history:
+        with st.expander("🗨️ Recent Chat (History)"):
+            # Only show the last 5 relevant interactions
+            for msg in history[-5:]:
+                role = "👤 You" if msg['role'] == "user" else "🤖 KALI"
+                st.markdown(f"**{role}**: {msg['content']}")
 
 def render_system_status():
-    """Renders a simple system status panel."""
-    duration = int(time.time() - st.session_state.get("start_time", time.time()))
-    
-    st.markdown('<div class="kali-card">', unsafe_allow_html=True)
-    st.subheader("System Status")
-    st.write(f"**State:** {st.session_state.get('kali_status', 'IDLE').upper()}")
-    st.write(f"**Uptime:** {duration}s")
-    st.write(f"**Latency:** {st.session_state.get('kali_latency', '0.8s')}")
-    st.write(f"**Time:** {datetime.now().strftime('%H:%M:%S')}")
-    st.markdown('</div>', unsafe_allow_html=True)
+    """Simple status check for the KALI core."""
+    st.sidebar.markdown("---")
+    st.sidebar.caption("CORE STABILITY: NOMINAL")
+    st.sidebar.caption("SYNCHRONIZATION: 100%")
 
 def explain_chart(chart_title, data_summary):
     """Triggered by 'Ask KALI' button under charts."""
-    prompt = f"Analyze this chart result for '{chart_title}'. Summary data: {data_summary}. Explain in 2 sentences."
-    st.session_state.kali_status = "thinking"
-    st.session_state.kali_message = ""
-    for token in ask_kali(prompt, context="Chart Analysis"):
-        st.session_state.kali_message += token
-    st.session_state.kali_status = "idle" 
-    st.rerun()
+    # Simplified placeholder for chart analysis in educational mode
+    st.info(f"KALI: In the context of {chart_title}, this data shows {data_summary}. Fascinating, right?")

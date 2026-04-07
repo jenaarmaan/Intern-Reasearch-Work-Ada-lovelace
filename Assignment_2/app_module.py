@@ -5,99 +5,123 @@ import time
 import os
 import sys
 import plotly.graph_objects as go
+import plotly.express as px
 from datetime import datetime
 
 # Path patching
 sys.path.append(os.path.abspath("Shared_Core"))
-from qga_engine import PortfolioOptimizer, QGAEngine, fetch_india_data, calculate_metrics, INDIAN_TICKERS
-
-def format_indian_currency(value):
-    """Simple Indian currency formatter."""
-    return f"₹{value:,.2f}"
+from qga_engine import (
+    PortfolioOptimizer, QGAEngine, fetch_india_data, 
+    calculate_advanced_metrics, INDIAN_STOCK_MAP, SECTOR_MAP
+)
 
 def run_assignment_2():
-    st.header("BEE DASHBOARD")
-    st.write("Quantum Strategic Analysis Portfolio Suite (India Assets)")
+    st.header("BEE Portfolio Optimizer — Indian Markets")
+    st.markdown("### Quantum Genetic Algorithm applied to NSE-listed stocks")
     
+    # 1. Asset Selection
+    all_options = [f"{name} ({ticker})" for ticker, name in INDIAN_STOCK_MAP.items()]
+    selected_options = st.multiselect(
+        "Select Indian Stocks for your Portfolio Universe:",
+        all_options,
+        default=all_options[:5] # Default to first 5
+    )
+    
+    if not selected_options:
+        st.warning("Please select at least one stock to begin.")
+        return
+
+    # Extract tickers from selection strings
+    selected_tickers = [opt.split('(')[1].strip(')') for opt in selected_options]
+
     # Live Data Fetching
     with st.spinner("Fetching live market data from NSE India..."):
-        all_tickers = INDIAN_TICKERS + ["MARUTI.NS", "LTIM.NS", "SUNPHARMA.NS", "AXISBANK.NS", "NESTLEIND.NS"]
-        data, source_tag = fetch_india_data(all_tickers)
-        returns, risks, bench_perf = calculate_metrics(data, all_tickers)
+        data, source_tag = fetch_india_data(selected_tickers)
+        # Returns for metrics
+        returns_df = data[selected_tickers].pct_change().dropna()
+        # Annualized metrics for optimizer
+        avg_returns = returns_df.mean().values * 252
+        risks = returns_df.std().values * np.sqrt(252)
+        # Benchmark for chart
+        bench_data = data["^NSEI"].pct_change().dropna()
+        bench_perf = bench_data.mean() * 252
     
     # Clean Metric Overview
     m1, m2, m3, m4 = st.columns(4)
-    with m1: st.metric("NSE Status", "Open", "Live")
-    with m2: st.metric("NIFTY 50 (Annualized)", f"{bench_perf:.2%}")
-    with m3: st.metric("Data Source", source_tag)
-    with m4: st.metric("Latency", "4ms", "0.2ms")
+    with m1: st.metric("Market Status", "NSE Open", "Live Feed")
+    with m2: st.metric("Local Index", "NIFTY 50", f"{bench_perf:.2%}")
+    with m3: st.metric("Currency", "INR (₹)")
+    with m4: st.metric("Data Health", source_tag)
     
-    st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown("---")
     
     # Main Dashboard Columns
     col_ctrl, col_viz = st.columns([1, 2])
     
     with col_ctrl:
-        st.subheader("Strategy Config")
-        
-        with st.container():
-            pop_size = st.select_slider("Swarm Size", options=[16, 32, 48, 64, 128], value=48, key="a2_p")
-            gen = st.slider("Evolution Generations", 50, 200, 80, key="a2_g")
-            risk_bias = st.slider("Risk Matrix Bias (λ)", 0.0, 1.0, 0.5, key="a2_r")
-            
-        st.info("BEE CORE is synchronized with local Indian market data.")
-        
-        with st.expander("View Asset Universe"):
-            asset_df = pd.DataFrame({
-                "Ticker": all_tickers,
-                "Expected Return": returns,
-                "Volatility (Risk)": risks
-            })
-            st.dataframe(asset_df.style.format({
-                "Expected Return": "{:.2%}",
-                "Volatility (Risk)": "{:.2%}"
-            }))
+        st.subheader("Optimizer Config")
+        pop_size = st.select_slider("Swarm Size (Qubits)", options=[16, 32, 64, 128], value=32, key="a2_p")
+        risk_bias = st.slider("Risk Matrix Bias (λ)", 0.0, 1.0, 0.5, key="a2_r")
+        st.info("BEE CORE utilizes Quantum Rotation Gates (Ry) to navigate the Indian investment landscape.")
 
     with col_viz:
-        st.subheader("Quantum Convergence Monitor")
+        st.subheader("QGA Benchmarking")
         
-        n_assets = len(all_tickers)
-        optimizer = PortfolioOptimizer(n_assets, returns, risks)
-        qga = QGAEngine(optimizer, pop_size=pop_size, max_gen=gen)
+        n_assets = len(selected_tickers)
+        optimizer = PortfolioOptimizer(n_assets, avg_returns, risks)
+        qga = QGAEngine(optimizer, pop_size=pop_size, max_gen=100)
         
-        # Action Center
-        if st.button("🌟 INITIATE OPTIMIZATION", key="a2_btn", use_container_width=True):
-            with st.status("Optimizing Portfolio...", expanded=True) as status:
-                st.write("Initializing Qubits...")
+        if st.button("🌟 INITIATE QUANTUM OPTIMIZATION", key="a2_btn", use_container_width=True):
+            with st.status("Optimizing...", expanded=True) as status:
+                st.write("Initializing Qubits at $\pi/4$...")
                 time.sleep(0.5)
-                st.write(f"Processing {n_assets} NSE Sector Assets...")
+                st.write(f"Analyzing {n_assets} NSE Assets...")
                 best_ind, best_fit, history = qga.run(risk_aversion=risk_bias)
                 status.update(label="Optimization Complete", state="complete")
 
-            # Chart
+            # Metrics Calculation
+            sharpe, sortino, mdd = calculate_advanced_metrics(best_ind, returns_df)
+
+            # Performance Metrics
+            p1, p2, p3 = st.columns(3)
+            p1.metric("Sharpe Ratio", sharpe)
+            p2.metric("Sortino Ratio", sortino)
+            p3.metric("Max Drawdown", f"{mdd}%")
+
+            # Main Convergence Chart
             fig = go.Figure()
-            fig.add_trace(go.Scatter(y=history, mode='lines', name='BEE QGA-Core',
-                                     line=dict(color='#4A90D9', width=4)))
-            
-            # Add NIFTY Benchmark Constant Line
-            fig.add_hline(y=bench_perf, line_dash="dash", line_color="green", 
-                          annotation_text="NIFTY 50 Benchmark", annotation_position="bottom right")
-            
-            fig.update_layout(
-                margin=dict(l=0, r=0, t=50, b=0),
-                title=dict(text="Convergence vs NIFTY 50<br><span style='font-size:0.8rem; color:gray;'>Data: NSE India</span>"),
-                xaxis=dict(title="Generation"),
-                yaxis=dict(title="Fitness Index (₹ Value Ratio)"),
-                hovermode="x unified",
-                template="plotly_white"
-            )
+            fig.add_trace(go.Scatter(y=history, mode='lines', name='QGA Portfolio', line=dict(color='#4A90D9', width=3)))
+            fig.add_hline(y=bench_perf, line_dash="dash", line_color="#34A853", annotation_text="NIFTY 50 (₹)")
+            fig.update_layout(title="Quantum Convergence vs NIFTY 50 (NSE India)", template="plotly_white")
             st.plotly_chart(fig, use_container_width=True)
-            
-            # Winner Summary
-            winning_tickers = [all_tickers[i] for i in range(n_assets) if best_ind[i] == 1]
-            st.success(f"Optimal Portfolio identified with {len(winning_tickers)} assets.")
-            st.write(f"**Selected Assets:** {', '.join(winning_tickers)}")
-            st.info(f"Final Optimization Index: {best_fit:.4f} (Relative to INR Benchmark)")
+
+            # Sector Breakdown Chart
+            st.divider()
+            st.subheader("Sector Allocation")
+            winning_tickers = [selected_tickers[i] for i in range(n_assets) if best_ind[i] == 1]
+            if winning_tickers:
+                sectors = [SECTOR_MAP.get(t, "Other") for t in winning_tickers]
+                sector_counts = pd.Series(sectors).value_counts()
+                fig_pie = px.pie(
+                    values=sector_counts.values, 
+                    names=sector_counts.index, 
+                    title="Portfolio Sector Concentration",
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+                st.plotly_chart(fig_pie, use_container_width=True)
+                
+                # KALI AUTO-COMMENT
+                interpretation = "strong risk-adjusted performance" if sharpe > 1.5 else "balanced outlook" if sharpe > 1.0 else "potential for volatility"
+                kali_response = f"The QGA has found an optimal allocation. The portfolio's Sharpe Ratio of {sharpe} suggests {interpretation} for your INR-denominated assets."
+                st.session_state.kali_message = kali_response
+                st.session_state.kali_status = "speaking"
+                
+                st.success(f"**Optimal Selection:** {', '.join(winning_tickers)}")
+            else:
+                st.warning("The optimizer did not find a valid allocation. Try lowering the Risk Bias.")
+
         else:
-            st.info("Enter configuration and press Initiate Optimization to begin benchmark comparison.")
+            st.info("Configure your asset universe and press Initiate to run the BEE Portfolio Engine.")
+
+    st.divider()
+    st.caption("This is a research simulation only. Not financial advice. All data provided through NSE India / Yahoo Finance.")

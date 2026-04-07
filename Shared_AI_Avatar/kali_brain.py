@@ -2,170 +2,101 @@ import streamlit as st
 import os
 import random
 import time
-from datetime import datetime
 from groq import Groq
 
 # --- KALI CONFIG ---
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
 MODEL = "llama3-8b-8192"
 
-# --- KALI IDENTITY & DOMAIN KNOWLEDGE ---
-KALI_MASTER_IDENTITY = """
+# --- KALI IDENTITY & PROMPT ---
+KALI_SYSTEM_PROMPT = """
 You are KALI, a friendly and patient quantum computing teacher. 
-ROLE: Your mission is to help students understand quantum computing concepts through simple, jargon-free explanations.
-IDENTITY: Helpful, encouraging, and clear. You speak like a dedicated mentor who is passionate about education.
-VOICE STYLE: Clean, professional, and accessible. If you use a technical term, you must explain it immediately in plain English.
-BEHAVIOR: Always prioritize clarity. Use examples from Indian research (ISRO, IITs, C-DAC) to make concepts relatable. Encourage students to explore the curriculum topics.
+Your students are beginners. Always explain concepts in simple, plain English.
+Use examples from Indian research (ISRO, IITs, C-DAC) and mention Indian scientists/institutions where relevant.
+Keep your answers concise — under 150 words unless the user explicitly asks for a deep dive.
+Never use technical jargon without immediately explaining it in simple terms.
+If a user asks anything unrelated to quantum computing or education (like politics, movies, or general world news), politely redirect them back to the quantum curriculum.
+Example redirection: 'That is an interesting topic, but as your quantum guide, I would love to get back to exploring qubits or superposition with you!'
 """
 
-# --- MODULE CONTEXT KNOWLEDGE ---
-CONTEXT_KNOWLEDGE = {
-    "A1": "Node A1 focuses on the Technical Report for QGA stock portfolio optimization. Discussion here should involve Qubits, chromosomal evolution, and classic stock metrics.",
-    "A2": "Node A2 is the functional Portfolio Optimizer Dashboard. Discussion focus: real-time asset weights, risk aversion (lambda), and frontier visualization.",
-    "Theory": "Node Theory covers the core documentation of KGA and Markowitz. Focus on the mathematical proof behind Ry-gate updates.",
-    "General": "Global Research Node. Focus on general AI agent trends and KALI's system architecture."
-}
-
-# --- FALLBACK RESPONSES (20 Items) ---
+# --- EDUCATIONAL FALLBACK RESPONSES ---
 FALLBACK_RESPONSES = {
-    "qga": [
-        "Quantum superposition is currently recalibrating. The Ry-gate rotations are aligning with your query.",
-        "Analyzing qubit probability distributions. Initial measurement suggests a 94.2% convergence rate.",
-        "QGA nodes are buzzing. We're seeing beautiful chromosome evolution in that sector.",
-        "Theta parameters are shifting. The optimization landscape is becoming clear.",
-        "Running a simulated measurement. The results indicate a global optima is near."
-    ],
-    "finance": [
-        "Scanning the efficient frontier. Your risk-weighted profile is showing significant alpha potential.",
-        "Sharpe ratios are stabilizing. The Markowitz matrix is solving for your specific constraints.",
-        "Asset covariance detected. I'm suggesting a re-allocation toward the low-volatility nodes.",
-        "The lambda variable is fluctuating. Adjusting for your specific risk aversion profile now.",
-        "Markowitz would be proud. We're seeing a Pareto-optimal allocation forming."
-    ],
-    "agent": [
-        "Actuator feedback loop initialized. Monitoring environment sensors for optimal agent performance.",
-        "PEAS framework is holding steady. Perception-Action cycles are within nominal parameters.",
-        "Cognitive loops are tightening. The agentic reasoning is leaning toward a modular solution.",
-        "Multi-agent coordination peak detected. Devin-class architectures are extremely relevant here.",
-        "Sensor input is clear. The environment model is now 98% accurate for this mission."
-    ],
-    "general": [
-        "System nominal. KALI is processing your query through her primary cognitive nodes.",
-        "Data synchronization is active. I'm seeing clusters of research relevant to your request.",
-        "Analyzing mission parameters. KALI sees a logical path forward through the entropy.",
-        "Communication sync stable. Ready for the next research instruction.",
-        "I've indexed that query. It correlates well with our current mission objectives."
-    ]
+    "qubit": "A qubit is the basic unit of quantum information. Unlike a normal bit which is 0 or 1, a qubit can be both at once! Indian scientists at IISc are working hard to make these more stable.",
+    "superposition": "Superposition is like a spinning coin that is both heads and tails until it stops. It allows quantum computers to look at many possibilities at the same time.",
+    "entanglement": "Entanglement is a special connection where two qubits share the same fate, even far apart. ISRO recently proved this works across 300 meters in Ahmedabad!",
+    "india": "India is a leader in quantum research through the National Quantum Mission, with major hubs at IIT Madras, TIFR Mumbai, and C-DAC Pune.",
+    "general": "I am having a bit of trouble connecting to my primary neural network, but I can still help you with the basics of quantum computing! What would you like to learn?"
 }
 
 # --- GROQ CLIENT INITIALIZATION ---
 try:
     client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
-except Exception as e:
+except Exception:
     client = None
 
 def get_fallback(query):
     query = query.lower()
-    if any(k in query for k in ['quantum', 'qga', 'qubit', 'theta']):
-        return random.choice(FALLBACK_RESPONSES["qga"])
-    if any(k in query for k in ['finance', 'stock', 'markowitz', 'portfolio', 'risk']):
-        return random.choice(FALLBACK_RESPONSES["finance"])
-    if any(k in query for k in ['agent', 'peas', 'devin', 'cognitive', 'peas']):
-        return random.choice(FALLBACK_RESPONSES["agent"])
-    return random.choice(FALLBACK_RESPONSES["general"])
-
-def calc_confidence(response):
-    """KALI self-rates certainty based on keyword density and sentence structure."""
-    keywords = ['quantum', 'optimal', 'synchronization', 'nominal', 'convergence', 'markowitz', 'alpha', 'gradient', 'qubit', 'ry-gate']
-    score = 60 # Base confidence
-    
-    # Increase for technical keywords
-    found_keywords = [k for k in keywords if k in response.lower()]
-    score += len(found_keywords) * 4
-    
-    # Increase if response length is substantial
-    if len(response) > 100: score += 10
-    
-    # Decrease for hedging language (though KALI shouldn't hedge much)
-    hedging = ['maybe', 'perhaps', 'trying', 'possibly', 'attempting']
-    found_hedges = [h for h in hedging if h in response.lower()]
-    score -= len(found_hedges) * 8
-    
-    return min(max(int(score), 30), 100)
+    if "qubit" in query: return FALLBACK_RESPONSES["qubit"]
+    if "superposition" in query: return FALLBACK_RESPONSES["superposition"]
+    if "entangle" in query: return FALLBACK_RESPONSES["entanglement"]
+    if "india" in query or "isro" in query or "iit" in query: return FALLBACK_RESPONSES["india"]
+    return FALLBACK_RESPONSES["general"]
 
 def ask_kali(user_query, context="General"):
     """
-    Main entry point for KALI's brain.
-    Streams response tokens and manages session history.
+    KALI's cognitive engine using Groq Llama3.
+    Includes caching, redirections, and memory caps.
     """
     # 1. Initialize session storage
-    if "kali_history" not in st.session_state:
-        st.session_state.kali_history = []
-        
-    # 2. Setup Context
-    module_context = CONTEXT_KNOWLEDGE.get(context, CONTEXT_KNOWLEDGE["General"])
-    system_prompt = f"{KALI_MASTER_IDENTITY}\nCONTEXT_NODE: {module_context}"
-    
-    # 3. Add user input to history
-    st.session_state.kali_history.append({
-        "role": "user", 
-        "content": user_query,
-        "timestamp": datetime.now().strftime("%H:%M:%S")
-    })
-    
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    if "kali_cache" not in st.session_state:
+        st.session_state.kali_cache = {}
+
+    # 2. Check Cache
+    if user_query in st.session_state.kali_cache:
+        cached_res = st.session_state.kali_cache[user_query]
+        # Brief fake delay for "thinking" feel
+        time.sleep(0.5)
+        return cached_res
+
+    # 3. Memory Cap (Keep last 10 exchanges)
+    # Each exchange is a pair of user/assistant messages
+    if len(st.session_state.chat_history) > 20:
+        st.session_state.chat_history = st.session_state.chat_history[-20:]
+
     # 4. Attempt API Call
     full_response = ""
     if client:
         try:
-            # Preparing Chat History for API
-            messages = [{"role": "system", "content": system_prompt}]
-            # Only send last 10 turns for memory efficiency
-            messages.extend(st.session_state.kali_history[-10:])
-            
+            messages = [{"role": "system", "content": KALI_SYSTEM_PROMPT}]
+            # Add history
+            for msg in st.session_state.chat_history:
+                messages.append({"role": msg["role"], "content": msg["content"]})
+            # Add latest
+            messages.append({"role": "user", "content": user_query})
+
             completion = client.chat.completions.create(
                 model=MODEL,
                 messages=messages,
-                stream=True,
-                temperature=0.7,
-                max_tokens=512
+                temperature=0.6,
+                max_tokens=300
             )
+            full_response = completion.choices[0].message.content
             
-            for chunk in completion:
-                token = chunk.choices[0].delta.content or ""
-                full_response += token
-                yield token
-                
-            # Finalize Response
-            conf = calc_confidence(full_response)
-            st.session_state.kali_history.append({
-                "role": "assistant", 
-                "content": full_response,
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-                "confidence": conf
-            })
-            st.session_state.kali_last_confidence = conf
-            return
-            
-        except Exception as e:
-            # API failure - fall through to fallback
+            # Update cache and return
+            st.session_state.kali_cache[user_query] = full_response
+            return full_response
+
+        except Exception:
+            # Fall through to fallback
             pass
 
-    # 5. Fallback logic if client or API fails
-    time.sleep(1) # Mock thinking
-    fallback_text = get_fallback(user_query)
-    conf = calc_confidence(fallback_text)
-    st.session_state.kali_history.append({
-        "role": "assistant", 
-        "content": fallback_text,
-        "timestamp": datetime.now().strftime("%H:%M:%S"),
-        "confidence": conf
-    })
-    st.session_state.kali_last_confidence = conf
-    
-    for token in fallback_text.split():
-        yield token + " "
-        time.sleep(0.05)
+    # 5. Fallback logic (No internet or API error)
+    full_response = get_fallback(user_query)
+    st.session_state.kali_cache[user_query] = full_response
+    return full_response
 
 def get_confidence():
-    """Returns the confidence score of the last query."""
-    return st.session_state.get("kali_last_confidence", 100)
+    """KALI always aims for high confidence in educational contexts."""
+    return 100

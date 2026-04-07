@@ -42,9 +42,20 @@
 
 /* Avatar Pulse Animation (Simple) */
 @keyframes soft-pulse {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }
 
 .avatar-pulse {
@@ -62,6 +73,55 @@
     font-size: 2rem;
 }
 
+/* KALI Clean Avatar Styles */
+.kali-avatar-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.kali-avatar {
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Idle State */
+.kali-idle { border: 4px solid #4A90D9; }
+
+/* Thinking State */
+@keyframes kaliPulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+.kali-thinking { 
+    border: 4px solid #FBBC05; 
+    animation: kaliPulse 1s infinite ease-in-out;
+}
+
+/* Speaking State */
+@keyframes kaliScale { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+.kali-speaking { 
+    border: 4px solid #34A853; 
+    animation: kaliScale 0.8s infinite ease-in-out;
+}
+
+/* Speech Bubble */
+.kali-speech-bubble {
+    background-color: #E8F0FE;
+    color: #1A73E8;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #D2E3FC;
+    margin-top: 15px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.kali-status-label {
+    font-size: 0.85rem;
+    color: #5f6368;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
 /* Status Capsules */
 .status-capsule {
     padding: 6px 12px;
@@ -70,5 +130,12 @@
     font-weight: 600;
 }
 
-.status-nominal { background: #e8f5e9; color: var(--success-green); }
-.status-alert { background: #fff3e0; color: #ef6c00; }
+.status-nominal {
+    background: #e8f5e9;
+    color: var(--success-green);
+}
+
+.status-alert {
+    background: #fff3e0;
+    color: #ef6c00;
+}

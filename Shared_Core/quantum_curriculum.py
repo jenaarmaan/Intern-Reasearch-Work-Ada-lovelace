@@ -20,10 +20,11 @@ CURRICULUM = {
             {"term": "Cryogenics", "definition": "The study of materials at extremely low temperatures, necessary for qubit stability."}
         ],
         "quiz": [
-            {"q": "What is the main difference between a bit and a qubit?", "options": ["Bits are faster", "Qubits can be 0 and 1 at once", "Bits are smaller", "Qubits don't need electricity"], "correct": 1},
-            {"q": "What happens during decoherence?", "options": ["The qubit gets stronger", "The qubit loses its quantum state", "The computer restarts", "Information is saved"], "correct": 1},
-            {"q": "Why do qubits need to be kept very cold?", "options": ["To save electricity", "To prevent heat from disturbing their state", "Because they are made of ice", "To increase their size"], "correct": 1}
+            {"question": "What is the main difference between a bit and a qubit?", "options": ["Bits are faster", "Qubits can be 0 and 1 at once", "Bits are smaller", "Qubits don't need electricity"], "answer": 1},
+            {"question": "What happens during decoherence?", "options": ["The qubit gets stronger", "The qubit loses its quantum state", "The computer restarts", "Information is saved"], "answer": 1},
+            {"question": "Why do qubits need to be kept very cold?", "options": ["To save electricity", "To prevent heat from disturbing their state", "Because they are made of ice", "To increase their size"], "answer": 1}
         ],
+        "challenge": {"question": "Can a qubit be measured without ending its superposition?", "options": ["Yes", "No", "Only on Tuesdays", "If it is blue"], "answer": 1},
         "fact": "Did you know? India's National Quantum Mission has a budget of over ₹6,000 crores to develop quantum technologies by 2031!"
     },
     "topic_2": {
@@ -44,10 +45,11 @@ CURRICULUM = {
             {"term": "Error Rate", "definition": "The frequency at which a quantum gate performs an incorrect operation."}
         ],
         "quiz": [
-            {"q": "What does a Hadamard Gate do?", "options": ["Turns off the computer", "Creates superposition", "Deletes data", "Speeds up the fan"], "correct": 1},
-            {"q": "How do quantum gates change a qubit's state?", "options": ["By deleting it", "By rotating its probability", "By making it heavier", "By changing its color"], "correct": 1},
-            {"q": "What is the 'Bloch Sphere' used for?", "options": ["Storing data", "Visualizing a qubit's state", "Cooling the computer", "Connecting to the internet"], "correct": 1}
+            {"question": "What does a Hadamard Gate do?", "options": ["Turns off the computer", "Creates superposition", "Deletes data", "Speeds up the fan"], "answer": 1},
+            {"question": "How do quantum gates change a qubit's state?", "options": ["By deleting it", "By rotating its probability", "By making it heavier", "By changing its color"], "answer": 1},
+            {"question": "What is the 'Bloch Sphere' used for?", "options": ["Storing data", "Visualizing a qubit's state", "Cooling the computer", "Connecting to the internet"], "answer": 1}
         ],
+        "challenge": {"question": "Is it possible to reverse a quantum gate operation?", "options": ["Never", "Always (Quantum gates are reversible)", "Only if the computer is off", "Yes, but it takes 100 years"], "answer": 1},
         "fact": "Did you know? Indian startups like QNu Labs are already using quantum-inspired gates to create unhackable communication systems."
     },
     "topic_3": {
@@ -68,10 +70,11 @@ CURRICULUM = {
             {"term": "Complexity", "definition": "A measure of how difficult a problem is for a computer to solve."}
         ],
         "quiz": [
-            {"q": "What did Einstein call entanglement?", "options": ["Magic math", "Spooky action at a distance", "Quantum speed", "The invisible wire"], "correct": 1},
-            {"q": "If two qubits are entangled and you measure one, what happens to the other?", "options": ["Nothing", "It instantly reacts", "It gets deleted", "It gets hot"], "correct": 1},
-            {"q": "Why is entanglement useful?", "options": ["It makes computers look cool", "It allows parts of a computer to work in harmony", "It reduces electricity use", "It saves disk space"], "correct": 1}
+            {"question": "What did Einstein call entanglement?", "options": ["Magic math", "Spooky action at a distance", "Quantum speed", "The invisible wire"], "answer": 1},
+            {"question": "If two qubits are entangled and you measure one, what happens to the other?", "options": ["Nothing", "It instantly reacts", "It gets deleted", "It gets hot"], "answer": 1},
+            {"question": "Why is entanglement useful?", "options": ["It makes computers look cool", "It allows parts of a computer to work in harmony", "It reduces electricity use", "It saves disk space"], "answer": 1}
         ],
+        "challenge": {"question": "Does entanglement allow for faster-than-light communication of actual data?", "options": ["Yes", "No (Information still requires a classical channel)", "Only for ISRO", "On Sundays"], "answer": 1},
         "fact": "Did you know? In 2022, ISRO broke records by achieving secure quantum communication over free space, proving India's leadership in this 'spooky' tech."
     },
     "topic_4": {
@@ -92,10 +95,11 @@ CURRICULUM = {
             {"term": "Optimization", "definition": "The process of making a circuit shorter and more efficient."}
         ],
         "quiz": [
-            {"q": "On a quantum circuit diagram, what do the lines represent?", "options": ["Electricity", "The path of a qubit (time)", "Cooling pipes", "Internet cables"], "correct": 1},
-            {"q": "Where does 'measurement' usually happen in a circuit?", "options": ["The beginning", "The middle", "The end", "Nowhere"], "correct": 1},
-            {"q": "What is the goal of quantum circuit optimization?", "options": ["Making it look pretty", "Making it shorter and more efficient", "Adding more gates", "Changing the color"], "correct": 1}
+            {"question": "On a quantum circuit diagram, what do the lines represent?", "options": ["Electricity", "The path of a qubit (time)", "Cooling pipes", "Internet cables"], "answer": 1},
+            {"question": "Where does 'measurement' usually happen in a circuit?", "options": ["The beginning", "The middle", "The end", "Nowhere"], "answer": 1},
+            {"question": "What is the goal of quantum circuit optimization?", "options": ["Making it look pretty", "Making it shorter and more efficient", "Adding more gates", "Changing the color"], "answer": 1}
         ],
+        "challenge": {"question": "What happens if a quantum circuit is too deep (too many gates)?", "options": ["It gets faster", "Errors accumulate and decoherence occurs", "It turns into a bit", "It prints more paper"], "answer": 1},
         "fact": "Did you know? India is setting up a 'Quantum Circuit Repository' to share standardized research code between different IITs."
     },
     "topic_5": {
@@ -116,10 +120,11 @@ CURRICULUM = {
             {"term": "Post-Quantum", "definition": "Technology designed to be secure against future quantum computers."}
         ],
         "quiz": [
-            {"q": "What is the primary goal of India's National Quantum Mission?", "options": ["To build better phones", "To develop quantum tech for the nation", "To launch more satellites", "To increase internet speed"], "correct": 1},
-            {"q": "Which organization is developing quantum simulators in Pune?", "options": ["ISRO", "C-DAC", "NASA", "Google"], "correct": 1},
-            {"q": "Why is 'Post-Quantum Cryptography' important?", "options": ["It's faster", "It's secure against future quantum attacks", "It uses less power", "It's free"], "correct": 1}
+            {"question": "What is the primary goal of India's National Quantum Mission?", "options": ["To build better phones", "To develop quantum tech for the nation", "To launch more satellites", "To increase internet speed"], "answer": 1},
+            {"question": "Which organization is developing quantum simulators in Pune?", "options": ["ISRO", "C-DAC", "NASA", "Google"], "answer": 1},
+            {"question": "Why is 'Post-Quantum Cryptography' important?", "options": ["It's faster", "It's secure against future quantum attacks", "It uses less power", "It's free"], "answer": 1}
         ],
+        "challenge": {"question": "Which Indian algorithm initiative is focused on simulation?", "options": ["ISRO-Sky", "QSim by MeitY", "IIT-Net", "C-DAC-Super"], "answer": 1},
         "fact": "Did you know? India's first indigenous quantum computer simulator, called 'QSim,' was launched by the MeitY (Ministry of Electronics and Information Technology) to train thousands of students."
     }
 }

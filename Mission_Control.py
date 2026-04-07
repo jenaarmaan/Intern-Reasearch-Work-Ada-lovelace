@@ -34,6 +34,7 @@ import Assignment_1.app_module as a1
 import Assignment_2.app_module as a2
 
 from quantum_curriculum import CURRICULUM
+from quiz_engine import render_quiz
 
 # --- KALI Session Initialization ---
 def init_kali_session():
@@ -135,8 +136,7 @@ layout_col1, layout_col2 = st.columns([0.4, 0.6])
 with layout_col1:
     render_avatar(
         state=st.session_state.kali_status,
-        message=st.session_state.kali_message,
-        confidence=get_confidence()
+        message=st.session_state.kali_message
     )
     v_col1, v_col2 = st.columns(2)
     with v_col1:
@@ -148,16 +148,47 @@ with layout_col1:
             st.session_state.kali_muted = not st.session_state.kali_muted
             st.rerun()
     
-    # Chat logic
-    query = st.chat_input("Ask KALI about quantum computing...", key="kali_main_chat")
+    # --- Feature 8: Stable Chat UI ---
+    st.markdown("---")
+    chat_container = st.container(height=300)
+    with chat_container:
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+            
+        for msg in st.session_state.chat_history:
+            with st.chat_message(msg["role"]):
+                st.write(msg["content"])
+    
+    query = st.chat_input("Ask KALI about quantum computing...")
+    
     if query or st.session_state.kali_query:
         final_query = query or st.session_state.kali_query
         st.session_state.kali_query = None
-        st.session_state.kali_message = ""
+        
+        # Add to history
+        st.session_state.chat_history.append({"role": "user", "content": final_query})
+        
         st.session_state.kali_status = "thinking"
-        for token in ask_kali(final_query, context=nav):
-            st.session_state.kali_message += token
-        speak(st.session_state.kali_message)
+        st.session_state.kali_message = "KALI is analyzing your query..."
+        st.rerun()
+
+# Processing Loop (Outside columns to allow rerun to refresh state)
+if st.session_state.kali_status == "thinking":
+    with st.spinner("KALI is thinking..."):
+        # Get response from stable LLM brain
+        last_user_msg = st.session_state.chat_history[-1]["content"]
+        response = ask_kali(last_user_msg)
+        
+        # Update history
+        st.session_state.chat_history.append({"role": "assistant", "content": response})
+        
+        # Manage history cap (10 exchanges = 20 messages)
+        if len(st.session_state.chat_history) > 20:
+            st.session_state.chat_history = st.session_state.chat_history[-20:]
+            
+        st.session_state.kali_message = response
+        st.session_state.kali_status = "speaking"
+        speak(response)
         st.session_state.kali_status = "idle"
         st.rerun()
 
@@ -192,6 +223,10 @@ with layout_col2:
             st.subheader("Welcome to Your Quantum Journey!")
             st.write("I am KALI, and I'm here to help you master the fundamentals of quantum computing. Choose a topic from the curriculum sidebar to begin our first lesson.")
             st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Bloch_sphere.svg/1200px-Bloch_sphere.svg.png", caption="The Bloch Sphere: Visualizing a Qubit's possibilities.", width=400)
+
+        # Render Quiz (F7)
+        if st.session_state.current_topic:
+            render_quiz(st.session_state.current_topic)
 
     elif nav == "KALI AVATAR CORE":
         run_avatar_specs()
