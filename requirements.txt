@@ -11,3 +11,4 @@ audio-recorder-streamlit
 groq
 SpeechRecognition
 pydub
+yfinance

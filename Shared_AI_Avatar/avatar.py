@@ -20,106 +20,52 @@ def render_safe(html_content: str):
 
 def render_avatar(state="idle", message="", confidence=100.0, collapsed=False):
     """
-    Renders KALI's physical presence and HUD.
+    Renders KALI's physical presence using simple, clean components.
     """
     if "start_time" not in st.session_state:
         st.session_state.start_time = time.time()
 
-    status_class = f"status-{state}"
-    ring_speed = "slow" if state == "idle" else "fast" if state == "thinking" else "static"
-    pulse_color = "#00f2ff" if state == "idle" else "#bc13fe" if state == "thinking" else "#ff3c3c"
-    
-    if collapsed:
-        render_safe(f"""
-        <div class="kali-hud-mini {status_class}">
-            <div class="neural-orb-mini"></div>
-            <div class="mini-tag">KALI ONLINE</div>
+    # Simple Avatar Circle with Pulse
+    st.markdown(f'''
+        <div class="kali-card" style="text-align: center;">
+            <div class="avatar-pulse">K</div>
+            <div style="margin-top: 15px; font-weight: 600; color: #4A90D9;">
+                KALI — {state.upper()}
+            </div>
         </div>
-        """)
-        return
+    ''', unsafe_allow_html=True)
 
-    # FULL HUD 
-    render_safe(f"""
-    <div class="kali-visual-framework {status_class}">
-        <div class="orb-platform-pro">
-            <div class="orb-aura-glow-v2"></div>
-            <div class="neural-orb-pro">
-                <div class="orb-core-v2"></div>
-                <div class="orb-outer-ring {ring_speed}-spin"></div>
-            </div>
-            <div class="status-pill-v2">
-                <span class="pulse-dot-v2" style="background: {pulse_color}; box-shadow: 0 0 10px {pulse_color};"></span>
-                <span class="status-text-v2">{state.upper()} MODE</span>
-            </div>
-        </div>
-        
-        <div class="speech-bubble-pro">
-            <div class="speech-header-pro">
-                <span class="header-node">KALI_OS_NEXUS</span>
-                <span class="header-timestamp">{datetime.now().strftime('%H:%M:%S')}</span>
-            </div>
-            <div class="typewriter-container">
-                <p class="kali-dialogue">{message}<span class="typing-cursor">|</span></p>
-            </div>
-        </div>
-        
-        <div class="metrics-hub">
-            <div class="metric-info">
-                <span class="metric-tag">COGNITIVE CONFIDENCE</span>
-                <span class="metric-val">{confidence}%</span>
-            </div>
-            <div class="meter-system">
-                <div class="meter-track-v2">
-                    <div class="meter-fill-v2" style="width: {confidence}%;"></div>
-                    <div class="meter-ticks">
-                        <span class="tick" style="left:25%"></span>
-                        <span class="tick" style="left:50%"></span>
-                        <span class="tick" style="left:75%"></span>
-                        <span class="tick" style="left:100%"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    """)
+    # Clean Message Display
+    if message:
+        if state == "thinking":
+            st.info(message)
+        elif state == "error":
+            st.error(message)
+        else:
+            st.success(message)
 
-    with st.expander("📂 KALI SENSORY BACKLOG", expanded=False):
+    # Confidence Meter
+    st.progress(confidence / 100.0, text=f"Cognitive Confidence: {confidence}%")
+
+    with st.expander("📂 Interaction History", expanded=False):
         if not st.session_state.get("kali_history"):
-            st.caption("Sensory buffers cleared. Waiting for interaction...")
+            st.caption("No recent interactions.")
         else:
             for entry in reversed(st.session_state.kali_history):
-                timestamp = entry.get("timestamp", "00:00:00")
                 role = "USER" if entry["role"] == "user" else "KALI"
-                text = entry["content"]
-                conf = entry.get("confidence", "100")
-                
-                st.markdown(f"""
-                <div class="backlog-row">
-                    <div class="backlog-header">
-                        <span class="backlog-time">[{timestamp}]</span>
-                        <span class="backlog-role">{role} :: {conf}%</span>
-                    </div>
-                    <div class="backlog-text">{text}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.write(f"**{role}:** {entry['content']}")
 
 def render_system_status():
-    """Renders the comprehensive KALI System Status panel for the right column."""
+    """Renders a simple system status panel."""
     duration = int(time.time() - st.session_state.get("start_time", time.time()))
-    latency = st.session_state.get("kali_latency", "0.8s")
     
-    render_safe(f"""
-    <div class="system-status-pnl">
-        <h3 class="pnl-title">KALI SYSTEM STATUS</h3>
-        <div class="status-grid">
-            <div class="status-item"><span class="lbl">AURA STATE</span><span class="val">{st.session_state.get('kali_status', 'IDLE')}</span></div>
-            <div class="status-item"><span class="lbl">SESSION UPTIME</span><span class="val">{duration}s</span></div>
-            <div class="status-item"><span class="lbl">LOGS GENERATED</span><span class="val">{len(st.session_state.get('kali_history', []))}</span></div>
-            <div class="status-item"><span class="lbl">BRAIN LATENCY</span><span class="val">{latency}</span></div>
-            <div class="status-item"><span class="lbl">NEXUS TIME</span><span class="val clock">{datetime.now().strftime('%H:%M:%S')}</span></div>
-        </div>
-    </div>
-    """)
+    st.markdown('<div class="kali-card">', unsafe_allow_html=True)
+    st.subheader("System Status")
+    st.write(f"**State:** {st.session_state.get('kali_status', 'IDLE').upper()}")
+    st.write(f"**Uptime:** {duration}s")
+    st.write(f"**Latency:** {st.session_state.get('kali_latency', '0.8s')}")
+    st.write(f"**Time:** {datetime.now().strftime('%H:%M:%S')}")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def explain_chart(chart_title, data_summary):
     """Triggered by 'Ask KALI' button under charts."""
@@ -128,5 +74,5 @@ def explain_chart(chart_title, data_summary):
     st.session_state.kali_message = ""
     for token in ask_kali(prompt, context="Chart Analysis"):
         st.session_state.kali_message += token
-    st.session_state.kali_status = "speaking"
+    st.session_state.kali_status = "idle" 
     st.rerun()

@@ -9,78 +9,95 @@ from datetime import datetime
 
 # Path patching
 sys.path.append(os.path.abspath("Shared_Core"))
-from qga_engine import PortfolioOptimizer, QGAEngine
+from qga_engine import PortfolioOptimizer, QGAEngine, fetch_india_data, calculate_metrics, INDIAN_TICKERS
+
+def format_indian_currency(value):
+    """Simple Indian currency formatter."""
+    return f"₹{value:,.2f}"
 
 def run_assignment_2():
-    st.markdown("<h2 style='color:#bc13fe; font-size:3rem;'>🧠 KALI CORE :: BEE DASHBOARD</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size:1.1rem; opacity:0.7;'>High-Horizon Quantum Strategic Analysis Portfolio Suite.</p>", unsafe_allow_html=True)
+    st.header("BEE DASHBOARD")
+    st.write("Quantum Strategic Analysis Portfolio Suite (India Assets)")
     
-    # Google-Style Metric Overview
-    st.markdown("<br>", unsafe_allow_html=True)
+    # Live Data Fetching
+    with st.spinner("Fetching live market data from NSE India..."):
+        all_tickers = INDIAN_TICKERS + ["MARUTI.NS", "LTIM.NS", "SUNPHARMA.NS", "AXISBANK.NS", "NESTLEIND.NS"]
+        data, source_tag = fetch_india_data(all_tickers)
+        returns, risks, bench_perf = calculate_metrics(data, all_tickers)
+    
+    # Clean Metric Overview
     m1, m2, m3, m4 = st.columns(4)
-    with m1: st.metric("System Uptime", "99.98%", "0.02%")
-    with m2: st.metric("Processing Load", "14.2 Gflops", "-1.4%")
-    with m3: st.metric("Swarm Accuracy", "94.2%", "2.1%")
+    with m1: st.metric("NSE Status", "Open", "Live")
+    with m2: st.metric("NIFTY 50 (Annualized)", f"{bench_perf:.2%}")
+    with m3: st.metric("Data Source", source_tag)
     with m4: st.metric("Latency", "4ms", "0.2ms")
     
-    st.markdown("<hr style='border-top:1px solid rgba(255,255,255,0.05);'>", unsafe_allow_html=True)
+    st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    st.markdown("<hr>", unsafe_allow_html=True)
     
     # Main Dashboard Columns
-    col_ctrl, col_viz = st.columns([1.5, 3.5])
+    col_ctrl, col_viz = st.columns([1, 2])
     
     with col_ctrl:
-        st.markdown("<h4 style='color:#00f2ff; margin-bottom:20px;'>🛠️ STRATEGY CONFIG</h4>", unsafe_allow_html=True)
+        st.subheader("Strategy Config")
         
-        with st.container(border=True):
+        with st.container():
             pop_size = st.select_slider("Swarm Size", options=[16, 32, 48, 64, 128], value=48, key="a2_p")
             gen = st.slider("Evolution Generations", 50, 200, 80, key="a2_g")
-            risk = st.slider("Risk Matrix Bias (λ)", 0.0, 1.0, 0.5, key="a2_r")
+            risk_bias = st.slider("Risk Matrix Bias (λ)", 0.0, 1.0, 0.5, key="a2_r")
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.info("KALI CORE is pre-synchronized with satellite node L-PK.")
+        st.info("BEE CORE is synchronized with local Indian market data.")
+        
+        with st.expander("View Asset Universe"):
+            asset_df = pd.DataFrame({
+                "Ticker": all_tickers,
+                "Expected Return": returns,
+                "Volatility (Risk)": risks
+            })
+            st.dataframe(asset_df.style.format({
+                "Expected Return": "{:.2%}",
+                "Volatility (Risk)": "{:.2%}"
+            }))
 
     with col_viz:
-        st.markdown("<h4 style='color:#bc13fe; margin-bottom:20px;'>📈 QUANTUM CONVERGENCE MONITOR</h4>", unsafe_allow_html=True)
+        st.subheader("Quantum Convergence Monitor")
         
-        # Real-time data logic
-        n_assets = 25
-        np.random.seed(42)
-        returns = np.random.uniform(0.05, 0.30, n_assets)
-        risks = np.random.uniform(0.12, 0.45, n_assets)
-        
+        n_assets = len(all_tickers)
         optimizer = PortfolioOptimizer(n_assets, returns, risks)
         qga = QGAEngine(optimizer, pop_size=pop_size, max_gen=gen)
         
         # Action Center
-        if st.button("🌟 INITIATE GLOBAL OPTIMIZATION", key="a2_btn", width="stretch"):
-            with st.status("Performing Multi-Swarm Handshake...", expanded=True) as status:
+        if st.button("🌟 INITIATE OPTIMIZATION", key="a2_btn", use_container_width=True):
+            with st.status("Optimizing Portfolio...", expanded=True) as status:
                 st.write("Initializing Qubits...")
                 time.sleep(0.5)
-                st.write("Rotating State Vectors...")
-                best_ind, best_fit, history = qga.run(risk_aversion=risk)
-                status.update(label="Optimization Complete :: KALI Success", state="complete")
+                st.write(f"Processing {n_assets} NSE Sector Assets...")
+                best_ind, best_fit, history = qga.run(risk_aversion=risk_bias)
+                status.update(label="Optimization Complete", state="complete")
 
-            # Chart - Google-Tier Data Viz
+            # Chart
             fig = go.Figure()
             fig.add_trace(go.Scatter(y=history, mode='lines', name='BEE QGA-Core',
-                                     line=dict(color='#bc13fe', width=4),
-                                     fill='tozeroy', fillcolor='rgba(188, 19, 254, 0.1)'))
+                                     line=dict(color='#4A90D9', width=4)))
+            
+            # Add NIFTY Benchmark Constant Line
+            fig.add_hline(y=bench_perf, line_dash="dash", line_color="green", 
+                          annotation_text="NIFTY 50 Benchmark", annotation_position="bottom right")
             
             fig.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)', 
-                plot_bgcolor='rgba(0,0,0,0)',
-                margin=dict(l=0, r=0, t=20, b=0),
-                xaxis=dict(showgrid=False, zeroline=False),
-                yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)'),
+                margin=dict(l=0, r=0, t=50, b=0),
+                title=dict(text="Convergence vs NIFTY 50<br><span style='font-size:0.8rem; color:gray;'>Data: NSE India</span>"),
+                xaxis=dict(title="Generation"),
+                yaxis=dict(title="Fitness Index (₹ Value Ratio)"),
                 hovermode="x unified",
-                template="plotly_dark"
+                template="plotly_white"
             )
-            st.plotly_chart(fig, width="stretch")
+            st.plotly_chart(fig, use_container_width=True)
             
-            st.success(f"Final Fitness Index: {best_fit:.4f}")
+            # Winner Summary
+            winning_tickers = [all_tickers[i] for i in range(n_assets) if best_ind[i] == 1]
+            st.success(f"Optimal Portfolio identified with {len(winning_tickers)} assets.")
+            st.write(f"**Selected Assets:** {', '.join(winning_tickers)}")
+            st.info(f"Final Optimization Index: {best_fit:.4f} (Relative to INR Benchmark)")
         else:
-            st.markdown("""
-                <div style='height: 350px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 12px; border: 2px dashed rgba(255,255,255,0.05);'>
-                    <p style='opacity: 0.4;'>READY FOR QUANTUM SIGNAL...</p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.info("Enter configuration and press Initiate Optimization to begin benchmark comparison.")

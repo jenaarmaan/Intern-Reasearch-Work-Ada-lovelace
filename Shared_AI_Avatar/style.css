@@ -1,331 +1,74 @@
 /* 
-   KALI CSS :: ULTRA-PREMIUM HOLOGRAPHIC DESIGN 
-   Theme: NASA Quantum Command Terminal / Obsidian Glass
+   KALI CSS :: CLEAN EDUCATIONAL DESIGN 
+   Primary Color: #4A90D9 (Soft Blue)
+   Secondary Color: #34A853 (Soft Green)
 */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,500;0,700;1,300&family=Inter:ital,wght@0,300;0,400;0,600;1,400&family=Space+Grotesk:wght@300;500;700&display=swap');
-
-/* --- 1. Global HUD & Scanlines --- */
 :root {
-    --neon-blue: #00f2ff;
-    --neon-purple: #bc13fe;
-    --neon-green: #00ffcc;
-    --neon-red: #ff3c3c;
-    --glass-pnl: rgba(8, 12, 28, 0.65);
-    --glass-accent: rgba(0, 242, 255, 0.12);
+    --primary-blue: #4A90D9;
+    --success-green: #34A853;
+    --border-color: #e0e0e0;
+    --bg-light: #f8f9fa;
+    --card-bg: #ffffff;
 }
 
+/* Global Styles */
 .stApp {
-    background: radial-gradient(circle at 50% 10%, #0d0e23, #020205);
+    background-color: var(--bg-light);
 }
 
-/* Retro CRT Scanline Overlay */
-.stApp::before {
-    content: " ";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-    background-size: 100% 3px, 2px 100%;
-    pointer-events: none;
-    z-index: 10000;
-    opacity: 0.15;
-}
-
-/* --- 2. Typography & Headers --- */
-h1, h2, h3, .pnl-title {
-    font-family: 'Space Grotesk', sans-serif !important;
-    letter-spacing: 0.15em !important;
-    text-transform: uppercase;
-}
-
-p, span, div, .stMarkdown {
-    font-size: 0.95rem !important;
-}
-
-/* --- 3. Premium Avatar Core (160px Orb) --- */
-.kali-visual-framework {
-    padding: 30px;
-    border-radius: 40px;
-    background: var(--glass-pnl);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid var(--glass-accent);
-    position: relative;
-    overflow: hidden;
-    transition: box-shadow 0.5s ease;
-    will-change: transform, opacity;
-}
-
-/* State Flashing Border */
-.status-thinking { border-color: var(--neon-purple); }
-.status-speaking { border-color: var(--neon-green); }
-.status-error { border-color: var(--neon-red); }
-
-.orb-platform-pro {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.neural-orb-pro {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.35) 0%, rgba(0, 10, 30, 1) 100%);
-    z-index: 10;
-    animation: floating-pro 6s ease-in-out infinite;
-}
-
-.orb-core-v2 {
-    position: absolute;
-    width: 45%;
-    height: 45%;
-    top: 27.5%;
-    left: 27.5%;
-    border-radius: 50%;
-    background: var(--glow-color, #00f2ff);
-    filter: blur(25px);
-    animation: pulse-core 2s ease-in-out infinite;
-}
-
-.orb-outer-ring {
-    position: absolute;
-    top: -15%; left: -15%;
-    width: 130%; height: 130%;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 242, 242, 0.15);
-    border-top: 1px solid var(--neon-blue);
-    border-bottom: 1px solid var(--neon-blue);
-    will-change: transform;
-}
-
-.slow-spin { animation: spin-pro 12s linear infinite; }
-.fast-spin { animation: spin-pro 3s linear infinite; }
-.static-spin { border-color: rgba(255, 255, 255, 0.05); }
-
-/* --- 4. Speech Bubble Terminal --- */
-.speech-bubble-pro {
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 25px;
-    padding: 25px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.speech-header-pro {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem !important;
-    color: var(--neon-blue);
-    opacity: 0.7;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-}
-
-.kali-dialogue {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 1.05rem !important;
-    line-height: 1.7;
-    color: #fff;
-    margin: 0;
-}
-
-.typing-cursor {
-    display: inline-block;
-    width: 8px;
-    margin-left: 5px;
-    animation: cursor-blink 0.8s infinite;
-}
-
-/* --- 5. Metrics & HUD --- */
-.status-pill-v2 {
-    position: absolute;
-    bottom: -15px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 6px 18px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem !important;
-    letter-spacing: 2.5px;
-}
-
-.pulse-dot-v2 { width: 8px; height: 8px; border-radius: 50%; }
-
-.meter-track-v2 {
-    position: relative;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 3px;
-    margin-top: 15px;
-}
-
-.meter-fill-v2 {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-blue), #fff);
-    transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.meter-ticks {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-}
-
-.tick {
-    position: absolute;
-    top: -5px; height: 16px;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* --- 6. Sidebar Perfection --- */
+/* Sidebar Styling */
 [data-testid="stSidebar"] {
-    background: rgba(4, 5, 12, 0.98) !important;
-    border-right: 1px solid var(--glass-accent);
+    border-right: 1px solid var(--border-color);
 }
 
-/* Active Nav Border */
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] {
-    position: relative;
-    padding-left: 15px;
-    transition: all 0.3s ease;
-}
-
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-baseweb="radio"]:hover {
-    border-left: 2px solid var(--neon-blue);
-    background: rgba(0, 242, 255, 0.03);
-}
-
-/* Color Coded Dots */
-.nav-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 15px;
-}
-
-/* Admin/Active Section Accents */
 .sidebar-section-header {
-    border-left: 3px solid var(--neon-blue);
-    padding-left: 12px;
-    margin-top: 25px;
-}
-
-/* --- 7. Buttons & Interactions --- */
-.stButton > button {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid var(--glass-accent) !important;
-    border-radius: 12px !important;
-    transition: all 0.1s ease-out !important;
-}
-
-.stButton > button:active {
-    transform: scale(0.97);
-}
-
-.stButton > button:hover {
-    border-color: var(--neon-blue) !important;
-    filter: brightness(1.2);
-}
-
-/* --- 8. System Status Pnl (Right Column) --- */
-.system-status-pnl {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 25px;
-    padding: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.status-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #666;
     margin-top: 20px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
 }
 
-.status-item {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+/* Card & UI Components */
+.kali-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
-.lbl { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem !important; opacity: 0.6; }
-.val { font-weight: 700; color: var(--neon-blue); }
-.clock { font-size: 1.1rem !important; font-family: 'JetBrains Mono', monospace; }
-
-/* --- Animations --- */
-@keyframes spin-pro { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes pulse-core { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.4); filter: brightness(1.5); } }
-@keyframes floating-pro { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
-@keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-/* --- 10. Mission Header & Sync --- */
-.mission-header-v52 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background: rgba(0, 0, 0, 0.4);
-    border-bottom: 1px solid var(--glass-accent);
-    position: fixed;
-    top: 0; left: 0; width: 100%;
-    z-index: 1000;
+/* Avatar Pulse Animation (Simple) */
+@keyframes soft-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
 }
 
-.header-left { font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; color: var(--neon-blue); letter-spacing: 4px; }
-.header-center { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; opacity: 0.7; }
-
-.nexus-sync-pill {
-    background: rgba(0, 242, 255, 0.05);
-    padding: 5px 15px;
-    border-radius: 50px;
-    border: 1px solid var(--neon-blue);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--neon-blue);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.sync-dot {
-    width: 6px; height: 6px;
-    background: #00ffcc;
+.avatar-pulse {
+    width: 120px;
+    height: 120px;
+    background: var(--primary-blue);
     border-radius: 50%;
-    /* Static box-shadow is safe for performance */
-    box-shadow: 0 0 8px #00ffcc;
-    animation: cursor-blink 2s infinite;
-    will-change: opacity;
+    margin: 0 auto;
+    animation: soft-pulse 3s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 2rem;
 }
 
-/* Sidebar Status Pills */
-.status-capsule-nominal {
-    border-radius: 5px;
-    padding: 10px;
-    background: rgba(0, 242, 255, 0.05);
-    border-left: 3px solid #00ffcc;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: #00ffcc;
+/* Status Capsules */
+.status-capsule {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
-.status-capsule-alert {
-    border-radius: 5px;
-    padding: 10px;
-    background: rgba(255, 60, 60, 0.05);
-    border-left: 3px solid #ff3c3c;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: #ff3c3c;
-}
+.status-nominal { background: #e8f5e9; color: var(--success-green); }
+.status-alert { background: #fff3e0; color: #ef6c00; }

@@ -1,11 +1,11 @@
 import streamlit as st
 
 def run_avatar_specs():
-    st.markdown("<h2 style='color:#00f2ff;'>🛡️ KALI CORE :: SYSTEM ARCHITECTURE</h2>", unsafe_allow_html=True)
+    st.header("System Architecture")
     st.markdown("---")
     
     # Section 1: All Assignments Overview
-    st.markdown("### 🛰️ RESEARCH DELIVERABLES HUB")
+    st.subheader("Research Deliverables")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
@@ -25,16 +25,16 @@ def run_avatar_specs():
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Section 2: Avatar Features & Working
-    st.markdown("### 🤖 KALI AVATAR :: FEATURES & LOGIC")
+    st.subheader("KALI Assistant Features")
     
     tab1, tab2, tab3 = st.tabs(["💎 Design Characteristics", "⚙️ Operational Logic", "🚀 Proper Working Guidance"])
     
     with tab1:
         st.markdown("""
-        - **3D Neural Orb**: A base64-encoded holographic centerpiece for low-latency visual persistence.
-        - **Aura Synchronization**: Dynamic CSS shift between Blue (Idle), Purple (Processing), and Green (Success).
-        - **Glassmorphic Deck**: 40px backdrop blur with a saturating container for high-end MNC aesthetics.
-        - **Laser-Scan Protocol**: Vertical scan beam for simulated activity during idle modes.
+        - **Professional Persona**: A clean, academic assistant designed for research support.
+        - **Status Indicators**: Simple color-coded messages (Blue/Green/Orange) for clear communication.
+        - **Modern Layout**: Follows standard educational platform design principles.
+        - **Typewriter Rendering**: Clean, readable response generation.
         """)
         
     with tab2:
@@ -46,13 +46,13 @@ def run_avatar_specs():
         
     with tab3:
         st.markdown("""
-        **1. COMMAND**: User selects a mission node from the NAVIGATION NEXUS.
+        **1. COMMAND**: User selects a page from the navigation menu.
         
-        **2. INTEGRATION**: KALI-Core reads the mission state and updates the *Session State*.
+        **2. INTEGRATION**: KALI-Core reads the current state and updates the *Session State*.
         
-        **3. MANIFESTATION**: The `render_ai_avatar()` function is called with the specific message.
+        **3. MANIFESTATION**: The `render_avatar()` function is called to display the visual interface.
         
-        **4. EXECUTION**: During heavy QGA computation, KALI automatically shifts the Aura to **Processing (Purple)** to alert the user of background reasoning.
+        **4. EXECUTION**: During computation, KALI updates the status indicator to show processing activity.
         """)
 
     st.markdown("---")

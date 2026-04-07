@@ -1,7 +1,7 @@
 import streamlit as st
 
 def run_theoretical_info():
-    st.markdown("<h2 style='color:#00e5ff;'>🧠 KALI-NEXUS :: THEORETICAL HUB</h2>", unsafe_allow_html=True)
+    st.header("Theoretical Concepts")
     st.markdown("---")
     
     col1, col2 = st.columns([1, 1.2])
@@ -33,7 +33,7 @@ def run_theoretical_info():
     st.info("💡 KALI Insight: By shifting the optimization from classical 'bits' to 'qubits', our portfolio weights achieve a 14% higher convergence efficiency.")
 
 def run_project_docs():
-    st.markdown("<h2 style='color:#ab47bc;'>📄 KALI DOCUMENTATION PROTOCOLS</h2>", unsafe_allow_html=True)
+    st.header("Project Documentation")
     st.markdown("---")
     
     st.markdown("""
@@ -52,7 +52,7 @@ def run_project_docs():
     - **Shared_Core/**: Houses the QGA Engine and theoretical frameworks.
     
     ### 🛠️ KALI Development Standards:
-    - **Modular Design**: Every page is a standalone function called by the KALI Hub.
-    - **Design Consistency**: Uses the proprietary glassmorphism and neon-blue palette.
+    - **Modular Design**: Every page is a standalone function.
+    - **Design Consistency**: Uses a clean, professional Streamlit theme with a soft blue accent.
     """)
-    st.success("✅ Documentation Protocols Active. KALI System Integrity Verified.")
+    st.success("Documentation protocols active. System integrity verified.")

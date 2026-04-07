@@ -1,7 +1,52 @@
 import numpy as np
+import pandas as pd
+import yfinance as yf
 from qiskit import QuantumCircuit
 from qiskit_aer import Aer
 import random
+import os
+from datetime import datetime
+
+# --- KALI INDIA DATA CONFIG ---
+INDIAN_TICKERS = [
+    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "WIPRO.NS", 
+    "TATAMOTORS.NS", "ITC.NS", "BAJFINANCE.NS", "SBIN.NS", "ADANIENT.NS"
+]
+BENCHMARK = "^NSEI" # NIFTY 50
+
+def fetch_india_data(tickers=INDIAN_TICKERS):
+    """
+    Fetches historical data for Indian stocks. 
+    Falls back to local CSV if live fetch fails.
+    """
+    try:
+        data = yf.download(tickers + [BENCHMARK], period="1y")['Adj Close']
+        if data.empty: raise ValueError("Empty data from yfinance")
+        return data, "Live (NSE India)"
+    except Exception as e:
+        print(f"Live fetch failed ({e}), switching to local cache...")
+        csv_path = "data/india_stocks_sample.csv"
+        if os.path.exists(csv_path):
+            data = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+            return data, "Offline Cache (Local)"
+        else:
+            # Last resort: Mock data if local cache is also missing
+            mock_data = pd.DataFrame(
+                np.random.rand(100, len(tickers) + 1) * 100, 
+                columns=tickers + [BENCHMARK]
+            )
+            return mock_data, "Emergency Mock"
+
+def calculate_metrics(data, tickers):
+    """Calculates expected returns and risks for the given tickers."""
+    returns_df = data[tickers].pct_change().dropna()
+    avg_returns = returns_df.mean().values * 252 # Annualized
+    risks = returns_df.std().values * np.sqrt(252) # Annualized Std Dev
+    
+    benchmark_returns = data[BENCHMARK].pct_change().dropna()
+    benchmark_performance = benchmark_returns.mean() * 252
+    
+    return avg_returns, risks, benchmark_performance
 
 # --- 1. Problem Formulation (Markowitz Portfolio Theory) ---
 class PortfolioOptimizer:
@@ -16,11 +61,11 @@ class PortfolioOptimizer:
         Weights are normalized to sum to 1.
         """
         # Normalize weights
-        w = weights / (np.sum(weights) + 1e-10)
+        if np.sum(weights) == 0: return -1.0
+        w = weights / np.sum(weights)
         expected_return = np.dot(w, self.returns)
-        risk = np.sqrt(np.dot(w**2, self.risks**2)) # Simple risk model: Standard Deviation
+        risk = np.sqrt(np.dot(w**2, self.risks**2))
         
-        # We want to MAXIMIZE expected_return and MINIMIZE risk
         return expected_return - (risk_aversion * risk)
 
 # --- 2. Quantum Genetic Algorithm (QGA) Implementation ---

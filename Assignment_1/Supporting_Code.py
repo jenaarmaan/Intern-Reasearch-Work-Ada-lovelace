@@ -18,8 +18,8 @@ from typing import Dict, Any, Optional
 # --- 1. Tool Definitions ---
 
 def get_exchange_rate(pair: str) -> str:
-    """Mock tool: Fetches exchange rates."""
-    rates = {"USD/EUR": 0.92, "USD/GBP": 0.79, "EUR/JPY": 162.5}
+    """Mock tool: Fetches exchange rates relative to INR."""
+    rates = {"INR/USD": 0.012, "INR/EUR": 0.011, "INR/GBP": 0.0094}
     return str(rates.get(pair.upper(), "Error: Pair not found."))
 
 def web_search(query: str) -> str:
@@ -49,15 +49,15 @@ For every task, you must follow the ReAct loop:
 4. Final Answer: The concise solution once sufficient data is gathered.
 
 AVAILABLE TOOLS:
-- get_exchange_rate(pair): Returns currency rate. Example: get_exchange_rate("USD/EUR")
+- get_exchange_rate(pair): Returns currency rate. Example: get_exchange_rate("INR/USD")
 - web_search(query): Searches for technical facts.
 
 WORKING EXAMPLE:
-Thought: I need to find the current USD to EUR rate to calculate the cost.
-Action: get_exchange_rate("USD/EUR")
-Observation: 0.92
+Thought: I need to find the current INR to USD rate to calculate the cost.
+Action: get_exchange_rate("INR/USD")
+Observation: 0.012
 Thought: I now have the rate. I can calculate the final value.
-Final Answer: The current exchange rate for USD to EUR is 0.92.
+Final Answer: The current exchange rate for INR to USD is 0.012.
 """
 
 class ReActAgent:
