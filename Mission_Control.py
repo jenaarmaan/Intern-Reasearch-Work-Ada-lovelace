@@ -123,15 +123,21 @@ with st.sidebar:
 # Main Header
 h_col1, h_col2 = st.columns([0.8, 0.2])
 with h_col1:
-    st.title("Quantum Learning with KALI")
+    # Feature: Dynamic Header Title
+    if nav == "PORTFOLIO OPTIMIZER (A2)":
+        st.title("BEE Portfolio Optimizer")
+    elif nav == "TECHNICAL REPORT (A1)":
+        st.title("Comparative Research Report")
+    else:
+        st.title("Quantum Learning with KALI")
 with h_col2:
     st.markdown(f"<div style='text-align: right; padding-top: 25px;'>{get_permission_pill('voice')}</div>", unsafe_allow_html=True)
 
 # Feature 5.0: Proactive Triggers
 check_proactive_triggers(current_page=nav)
 
-# Layout
-layout_col1, layout_col2 = st.columns([0.4, 0.6])
+# Layout: Widened main content area for Plots
+layout_col1, layout_col2 = st.columns([0.3, 0.7])
 
 with layout_col1:
     render_avatar(
@@ -204,18 +210,10 @@ with layout_col2:
                 for item in topic['key_terms']:
                     st.write(f"- **{item['term']}**: {item['definition']}")
             
-            st.subheader("🧠 Quick Quiz")
-            for idx, q_data in enumerate(topic['quiz']):
-                st.write(f"**Q{idx+1}: {q_data['q']}**")
-                choice = st.radio(f"Select Answer for Q{idx+1}:", q_data['options'], key=f"q_{st.session_state.current_topic}_{idx}")
-                if st.button(f"Check Answer Q{idx+1}", key=f"btn_check_{idx}"):
-                    if q_data['options'].index(choice) == q_data['correct']:
-                        st.success("Correct!")
-                        if idx == len(topic['quiz']) - 1:
-                            st.session_state.topic_progress[st.session_state.current_topic] = "green"
-                    else:
-                        st.error("Try again!")
+            # Render the interactive quiz using the centralized engine
+            render_quiz(st.session_state.current_topic)
             
+            # Final lesson footer fact
             st.markdown("---")
             st.caption(f"💡 {topic['fact']}")
             
@@ -223,10 +221,6 @@ with layout_col2:
             st.subheader("Welcome to Your Quantum Journey!")
             st.write("I am KALI, and I'm here to help you master the fundamentals of quantum computing. Choose a topic from the curriculum sidebar to begin our first lesson.")
             st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Bloch_sphere.svg/1200px-Bloch_sphere.svg.png", caption="The Bloch Sphere: Visualizing a Qubit's possibilities.", width=400)
-
-        # Render Quiz (F7)
-        if st.session_state.current_topic:
-            render_quiz(st.session_state.current_topic)
 
     elif nav == "KALI AVATAR CORE":
         run_avatar_specs()
@@ -241,7 +235,4 @@ with layout_col2:
         run_project_docs()
 
 st.markdown("---")
-st.caption("KALI — Quantum Computing Education Platform | Built for National Quantum Mission Awareness")
-
-st.markdown("---")
-st.caption("KALI — Quantum Computing Education Platform | Built with Streamlit")
+st.caption("KALI — Quantum Computing Education Platform | Built for National Quantum Mission Research Awareness")

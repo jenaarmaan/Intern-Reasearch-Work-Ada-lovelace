@@ -5,12 +5,21 @@ import time
 from groq import Groq
 
 # --- KALI CONFIG ---
-try:
-    GROQ_API_KEY = st.secrets.get("GROQ_API_KEY") 
-except Exception:
-    # Handle cases where st.secrets is entirely missing (Streamlit < 1.30 or local dev)
-    GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+def get_groq_key():
+    # Try Environment Variable first (most stable for local/server)
+    key = os.environ.get("GROQ_API_KEY")
+    if key: return key
+    
+    # Try Streamlit Secrets (for Streamlit Cloud)
+    try:
+        # Check if secrets are available at all
+        if "GROQ_API_KEY" in st.secrets:
+            return st.secrets["GROQ_API_KEY"]
+    except Exception:
+        pass
+    return None
 
+GROQ_API_KEY = get_groq_key()
 MODEL = "llama3-8b-8192"
 
 # --- KALI IDENTITY & PROMPT ---

@@ -30,10 +30,17 @@ def render_quiz(topic_key: str):
     with st.form(key=f"form_{topic_key}"):
         user_answers = []
         for idx, q_item in enumerate(quiz_data):
-            st.write(f"**Q{idx+1}: {q_item['question']}**")
+            # Defensive check: ensure q_item is a dict
+            if not isinstance(q_item, dict):
+                continue
+            
+            q_text = q_item.get('question', 'Missing Question')
+            q_options = q_item.get('options', [])
+            
+            st.write(f"**Q{idx+1}: {q_text}**")
             ans = st.radio(
                 f"Select option for Q{idx+1}:", 
-                q_item['options'], 
+                q_options, 
                 key=f"radio_{topic_key}_{idx}",
                 label_visibility="collapsed"
             )
@@ -49,8 +56,12 @@ def render_quiz(topic_key: str):
     if is_submitted:
         score = 0
         for idx, q_item in enumerate(quiz_data):
+            if not isinstance(q_item, dict): continue
+            
             user_ans = st.session_state.get(f"radio_{topic_key}_{idx}")
-            correct_ans = q_item['options'][q_item['answer']]
+            q_options = q_item.get('options', [])
+            correct_idx = q_item.get('answer', 0)
+            correct_ans = q_options[correct_idx] if correct_idx < len(q_options) else "N/A"
             
             if user_ans == correct_ans:
                 score += 1
@@ -59,15 +70,15 @@ def render_quiz(topic_key: str):
                 st.error(f"Q{idx+1}: Incorrect. The correct answer was: *{correct_ans}*")
         
         # Mastery Calculation
-        mastery = score / len(quiz_data)
+        mastery = score / len(quiz_data) if quiz_data else 0
         st.write(f"### Your Score: {score} out of {len(quiz_data)}")
         
         # KALI Response Dispatch
         kali_msg = ""
-        if score == 3:
+        if score == len(quiz_data):
             kali_msg = "Excellent! You have mastered this concept. You are ready for the challenge!"
             st.session_state.topic_progress[topic_key] = "green"
-        elif score == 2:
+        elif score >= len(quiz_data) / 2:
             kali_msg = "Good effort! Review the lesson once more to get a perfect score."
             st.session_state.topic_progress[topic_key] = "blue"
         else:
@@ -78,17 +89,24 @@ def render_quiz(topic_key: str):
         st.session_state.kali_status = "speaking"
         
         # Bonus Challenge Logic
-        if score == 3 and challenge_data:
+        if score == len(quiz_data) and challenge_data:
             st.markdown("---")
             st.markdown("### 🏆 BONUS CHALLENGE")
-            st.write(f"**{challenge_data['question']}**")
-            c_ans = st.radio("Challenge Answer:", challenge_data['options'], key=f"challenge_{topic_key}")
+            c_q = challenge_data.get('question', 'Missing Challenge')
+            c_opts = challenge_data.get('options', [])
+            st.write(f"**{c_q}**")
+            c_ans = st.radio("Challenge Answer:", c_opts, key=f"challenge_{topic_key}")
+            
             if st.button("Check Challenge Paper"):
-                if challenge_data['options'].index(c_ans) == challenge_data['answer']:
-                    st.balloons()
-                    st.success("INCREDIBLE! You are a Quantum Pioneer!")
-                else:
-                    st.warning("Almost! That was a tricky one.")
+                correct_c_idx = challenge_data.get('answer', 0)
+                try:
+                    if c_opts.index(c_ans) == correct_c_idx:
+                        st.balloons()
+                        st.success("INCREDIBLE! You are a Quantum Pioneer!")
+                    else:
+                        st.warning("Almost! That was a tricky one.")
+                except ValueError:
+                    st.error("Invalid challenge option selection.")
 
         # Retry Button
         if st.button("🔄 Try Quiz Again"):

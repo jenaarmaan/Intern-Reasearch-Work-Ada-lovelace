@@ -103,6 +103,15 @@ def calculate_advanced_metrics(weights, returns_df):
     
     return round(sharpe, 2), round(sortino, 2), round(max_dd * 100, 2)
 
+def calculate_metrics(data, tickers):
+    """Compatibility alias for Assignment 1 Technical Report."""
+    returns_df = data[tickers].pct_change().dropna()
+    avg_returns = returns_df.mean().values * 252
+    risks = returns_df.std().values * np.sqrt(252)
+    benchmark_returns = data[BENCHMARK].pct_change().dropna()
+    benchmark_performance = benchmark_returns.mean() * 252
+    return avg_returns, risks, benchmark_performance
+
 # --- Problem Formulation (Markowitz Portfolio Theory) ---
 class PortfolioOptimizer:
     def __init__(self, n_assets: int, returns: np.ndarray, risks: np.ndarray):
@@ -161,3 +170,103 @@ class QGAEngine:
             self.update_theta(population, fitness_scores)
             self.history.append(self.best_fitness)
         return self.best_individual, self.best_fitness, self.history
+
+# --- Classical Benchmarks (GA, PSO, DE) for technical reports ---
+
+class ClassicalGA:
+    def __init__(self, optimizer: PortfolioOptimizer, pop_size: int = 20, max_gen: int = 50):
+        self.optimizer = optimizer
+        self.pop_size = pop_size
+        self.max_gen = max_gen
+        self.n = optimizer.n_assets
+        self.history = []
+
+    def run(self, risk_aversion: float = 0.5):
+        population = np.random.randint(2, size=(self.pop_size, self.n))
+        best_fit = -float('inf')
+        best_ind = None
+        for gen in range(self.max_gen):
+            fitness_scores = np.array([self.optimizer.fitness(ind, risk_aversion) for ind in population])
+            idx = np.argmax(fitness_scores)
+            if fitness_scores[idx] > best_fit:
+                best_fit = fitness_scores[idx]
+                best_ind = population[idx].copy()
+            new_pop = []
+            for _ in range(self.pop_size):
+                parent1 = population[random.randint(0, self.pop_size-1)]
+                parent2 = population[random.randint(0, self.pop_size-1)]
+                pivot = self.n // 2
+                child = np.concatenate([parent1[:pivot], parent2[pivot:]])
+                if random.random() < 0.1:
+                    m_idx = random.randint(0, self.n-1)
+                    child[m_idx] = 1 - child[m_idx]
+                new_pop.append(child)
+            population = np.array(new_pop)
+            self.history.append(best_fit)
+        return best_ind, best_fit, self.history
+
+class ClassicalPSO:
+    def __init__(self, optimizer: PortfolioOptimizer, pop_size: int = 20, max_gen: int = 50):
+        self.optimizer = optimizer
+        self.pop_size = pop_size
+        self.max_gen = max_gen
+        self.n = optimizer.n_assets
+        self.history = []
+
+    def run(self, risk_aversion: float = 0.5):
+        positions = np.random.rand(self.pop_size, self.n)
+        velocities = np.random.rand(self.pop_size, self.n) * 0.1
+        p_best = positions.copy()
+        p_best_fit = np.array([self.optimizer.fitness(p > 0.5, risk_aversion) for p in positions])
+        g_best_idx = np.argmax(p_best_fit)
+        g_best = p_best[g_best_idx].copy()
+        g_best_fit = p_best_fit[g_best_idx]
+        w, c1, c2 = 0.7, 1.5, 1.5
+        for gen in range(self.max_gen):
+            for i in range(self.pop_size):
+                r1, r2 = random.random(), random.random()
+                velocities[i] = w*velocities[i] + c1*r1*(p_best[i] - positions[i]) + c2*r2*(g_best - positions[i])
+                positions[i] = np.clip(positions[i] + velocities[i], 0, 1)
+                current_fit = self.optimizer.fitness(positions[i] > 0.5, risk_aversion)
+                if current_fit > p_best_fit[i]:
+                    p_best_fit[i] = current_fit
+                    p_best[i] = positions[i].copy()
+                    if current_fit > g_best_fit:
+                        g_best_fit = current_fit
+                        g_best = positions[i].copy()
+            self.history.append(g_best_fit)
+        return (g_best > 0.5).astype(int), g_best_fit, self.history
+
+class ClassicalDE:
+    def __init__(self, optimizer: PortfolioOptimizer, pop_size: int = 20, max_gen: int = 50):
+        self.optimizer = optimizer
+        self.pop_size = pop_size
+        self.max_gen = max_gen
+        self.n = optimizer.n_assets
+        self.history = []
+
+    def run(self, risk_aversion: float = 0.5):
+        population = np.random.rand(self.pop_size, self.n)
+        fitness_scores = np.array([self.optimizer.fitness(ind > 0.5, risk_aversion) for ind in population])
+        best_idx = np.argmax(fitness_scores)
+        best_fit = fitness_scores[best_idx]
+        best_ind = population[best_idx].copy()
+        F, CR = 0.8, 0.9
+        for gen in range(self.max_gen):
+            for i in range(self.pop_size):
+                idxs = [idx for idx in range(self.pop_size) if idx != i]
+                a, b, c = population[np.random.choice(idxs, 3, replace=False)]
+                mutant = np.clip(a + F*(b - c), 0, 1)
+                cross_points = np.random.rand(self.n) < CR
+                if not np.any(cross_points): 
+                    cross_points[np.random.randint(0, self.n)] = True
+                trial = np.where(cross_points, mutant, population[i])
+                trial_fit = self.optimizer.fitness(trial > 0.5, risk_aversion)
+                if trial_fit > fitness_scores[i]:
+                    population[i] = trial
+                    fitness_scores[i] = trial_fit
+                    if trial_fit > best_fit:
+                        best_fit = trial_fit
+                        best_ind = trial.copy()
+            self.history.append(best_fit)
+        return (best_ind > 0.5).astype(int), best_fit, self.history
