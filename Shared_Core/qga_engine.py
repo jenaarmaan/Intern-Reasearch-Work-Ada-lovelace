@@ -55,6 +55,11 @@ def fetch_india_data(tickers=INDIAN_TICKERS):
     try:
         data = yf.download(tickers + [BENCHMARK], period="1y")['Adj Close']
         if data.empty: raise ValueError("Empty data from yfinance")
+        
+        # Ensure it's a DataFrame (yf.download can return a Series for single ticker)
+        if isinstance(data, pd.Series):
+            data = data.to_frame()
+            
         # Save a local cache copy whenever fetch succeeds
         if not os.path.exists("data"): os.makedirs("data")
         data.to_csv("data/india_stocks_1yr.csv")

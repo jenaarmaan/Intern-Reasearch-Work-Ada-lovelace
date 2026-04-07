@@ -25,9 +25,13 @@ def run_assignment_1():
         st.write("Comparing algorithmic efficiency using real NSE India assets.")
         
         # Live Data Fetching
-        with st.spinner("Fetching live market data for NSE Universe..."):
-            data, source_tag = fetch_india_data(INDIAN_TICKERS)
-            returns, risks, bench_perf = calculate_metrics(data, INDIAN_TICKERS)
+        try:
+            with st.spinner("Fetching live market data for NSE Universe..."):
+                data, source_tag = fetch_india_data(INDIAN_TICKERS)
+                returns, risks, bench_perf = calculate_metrics(data, INDIAN_TICKERS)
+        except Exception as e:
+            st.error(f"Data Fetch Failure: {e}")
+            return
         
         # Layout
         col1, col2 = st.columns([1, 1])

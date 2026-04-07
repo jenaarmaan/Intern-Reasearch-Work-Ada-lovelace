@@ -35,16 +35,29 @@ def run_assignment_2():
     selected_tickers = [opt.split('(')[1].strip(')') for opt in selected_options]
 
     # Live Data Fetching
-    with st.spinner("Fetching live market data from NSE India..."):
-        data, source_tag = fetch_india_data(selected_tickers)
-        # Returns for metrics
-        returns_df = data[selected_tickers].pct_change().dropna()
-        # Annualized metrics for optimizer
-        avg_returns = returns_df.mean().values * 252
-        risks = returns_df.std().values * np.sqrt(252)
-        # Benchmark for chart
-        bench_data = data["^NSEI"].pct_change().dropna()
-        bench_perf = bench_data.mean() * 252
+    try:
+        with st.spinner("Fetching live market data from NSE India..."):
+            data, source_tag = fetch_india_data(selected_tickers)
+            if data is None or data.empty:
+                st.error("Failed to retrieve market data. The NSE feed may be temporarily unavailable.")
+                return
+            
+            # Returns for metrics
+            returns_df = data[selected_tickers].pct_change().dropna()
+            # Annualized metrics for optimizer
+            avg_returns = returns_df.mean().values * 252
+            risks = returns_df.std().values * np.sqrt(252)
+            
+            # Benchmark for chart
+            bench_ticker = "^NSEI"
+            if bench_ticker in data.columns:
+                bench_data = data[bench_ticker].pct_change().dropna()
+                bench_perf = bench_data.mean() * 252
+            else:
+                bench_perf = 0.12 # Default 12% if benchmark missing
+    except Exception as e:
+        st.error(f"Market Data Integration Error: {e}")
+        return
     
     # Clean Metric Overview
     m1, m2, m3, m4 = st.columns(4)

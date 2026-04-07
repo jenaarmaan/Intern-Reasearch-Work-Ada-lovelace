@@ -92,12 +92,15 @@ with st.sidebar:
             selected_topic_key = key
             st.session_state.current_topic = key
             st.session_state.topic_progress[key] = "blue"
+            st.session_state.nav_portal = "QUANTUM LEARNING HOME" # Force nav sync
             st.session_state.kali_message = topic['explanation'].split('.')[0] + "." # First sentence
             st.session_state.kali_status = "idle"
-            # Rerunning to update main area and KALI
             st.rerun()
 
-    st.sidebar.header("🗺️ Advanced Research")
+    # Navigation Controller Sync
+    if "nav_portal" not in st.session_state:
+        st.session_state.nav_portal = "QUANTUM LEARNING HOME"
+    
     nav_options = {
         "QUANTUM LEARNING HOME": "teal",
         "PORTFOLIO OPTIMIZER (A2)": "gray",
@@ -106,7 +109,13 @@ with st.sidebar:
         "THEORETICAL CONCEPTS": "gray",
         "PROJECT DOCUMENTATION": "gray"
     }
-    nav = st.radio("Select Portal", list(nav_options.keys()), label_visibility="collapsed")
+        
+    nav = st.radio("Select Portal", list(nav_options.keys()), 
+                   index=list(nav_options.keys()).index(st.session_state.nav_portal),
+                   key="portal_selector", label_visibility="collapsed")
+    
+    # Sync radio back to state
+    st.session_state.nav_portal = nav
     
     # Feature 4.0: Permission Sidebar
     render_permission_sidebar()
@@ -164,19 +173,6 @@ with layout_col1:
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.write(msg["content"])
-    
-    query = st.chat_input("Ask KALI about quantum computing...")
-    
-    if query or st.session_state.kali_query:
-        final_query = query or st.session_state.kali_query
-        st.session_state.kali_query = None
-        
-        # Add to history
-        st.session_state.chat_history.append({"role": "user", "content": final_query})
-        
-        st.session_state.kali_status = "thinking"
-        st.session_state.kali_message = "KALI is analyzing your query..."
-        st.rerun()
 
 # Processing Loop (Outside columns to allow rerun to refresh state)
 if st.session_state.kali_status == "thinking":
@@ -236,3 +232,18 @@ with layout_col2:
 
 st.markdown("---")
 st.caption("KALI — Quantum Computing Education Platform | Built for National Quantum Mission Research Awareness")
+
+# Global Chat Input (Pinned to bottom for stability)
+query = st.chat_input("Ask KALI about quantum computing...")
+
+if query or st.session_state.kali_query:
+    final_query = query or st.session_state.kali_query
+    st.session_state.kali_query = None
+    
+    # Add to history
+    if "chat_history" not in st.session_state: st.session_state.chat_history = []
+    st.session_state.chat_history.append({"role": "user", "content": final_query})
+    
+    st.session_state.kali_status = "thinking"
+    st.session_state.kali_message = "KALI is analyzing your query..."
+    st.rerun()
