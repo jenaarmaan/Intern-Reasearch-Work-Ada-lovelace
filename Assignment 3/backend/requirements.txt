@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+qiskit
+qiskit-aer
+google-generativeai
+python-dotenv
+pydantic
