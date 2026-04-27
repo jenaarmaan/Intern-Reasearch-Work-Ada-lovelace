@@ -1,8 +1,0 @@
-streamlit
-fastapi
-uvicorn[standard]
-qiskit
-qiskit-aer
-google-genai
-python-dotenv
-pydantic
