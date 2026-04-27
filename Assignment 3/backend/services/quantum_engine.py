@@ -1,15 +1,21 @@
 from qiskit import QuantumCircuit, transpile
-from qiskit_aer import AerSimulator
 import json
+
+# Try to import high-performance Aer, fallback to basic Python simulator if blocked
+try:
+    from qiskit_aer import AerSimulator
+    HAS_AER = True
+except (ImportError, Exception):
+    from qiskit.providers.basic_provider import BasicSimulator
+    HAS_AER = False
 
 def build_and_simulate_circuit(circuit_data):
     """
     Takes structured JSON circuit data and returns simulation results.
+    Uses high-performance Aer if available, otherwise falls back to pure Python simulator.
     """
     try:
         num_qubits = circuit_data.get("qubits", 1)
-        # QuantumCircuit(num_qubits, num_clbits)
-        # We'll use the same number of classical bits for simplicity in measurement
         qc = QuantumCircuit(num_qubits, num_qubits)
         
         gates = circuit_data.get("gates", [])
@@ -47,8 +53,14 @@ def build_and_simulate_circuit(circuit_data):
             elif gate_type == "MEASURE":
                 qc.measure(target, target)
 
-        # Simulation
-        simulator = AerSimulator()
+        # Choose Simulator
+        if HAS_AER:
+            simulator = AerSimulator()
+            method = "Aer (C++)"
+        else:
+            simulator = BasicSimulator()
+            method = "Basic (Python Fallback)"
+
         compiled_circuit = transpile(qc, simulator)
         job = simulator.run(compiled_circuit, shots=1024)
         result = job.result()
@@ -61,14 +73,16 @@ def build_and_simulate_circuit(circuit_data):
             "gate_count": sum(gate_counts.values()),
             "qubits": num_qubits,
             "width": qc.width(),
-            "gate_distribution": dict(gate_counts)
+            "gate_distribution": dict(gate_counts),
+            "sim_method": method
         }
         
         return {
             "success": True,
             "counts": counts,
             "metrics": metrics,
-            "qasm": qc.qasm() if hasattr(qc, 'qasm') else "N/A"
+            "qasm": qc.qasm() if hasattr(qc, 'qasm') else "N/A",
+            "diagram": qc.draw('text').__str__()
         }
         
     except Exception as e:

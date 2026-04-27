@@ -9,7 +9,7 @@ load_dotenv()
 GENAI_API_KEY = os.getenv("GOOGLE_API_KEY")
 client = None
 if GENAI_API_KEY:
-    client = genai.Client(api_key=GENAI_API_KEY)
+    client = genai.Client(api_key=GENAI_API_KEY, http_options={'api_version': 'v1beta'})
 
 SYSTEM_PROMPT = """
 You are a Quantum Circuit Architect. Your task is to translate natural language descriptions of quantum experiments into a structured JSON format that can be parsed into a Qiskit circuit.
@@ -50,14 +50,44 @@ def generate_circuit_json(prompt: str):
             return {"qubits": 2, "gates": [{"type": "H", "target": 0}, {"type": "CNOT", "control": 0, "target": 1}, {"type": "MEASURE", "target": 0}, {"type": "MEASURE", "target": 1}]}
         return {"error": "API Key not configured"}
 
+    response = None
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-flash-latest",
             contents=f"{SYSTEM_PROMPT}\n\nUser Prompt: {prompt}"
         )
         
         # Clean response text in case of accidental markdown
-        clean_json = response.text.strip().replace("```json", "").replace("```", "")
-        return json.loads(clean_json)
+        if hasattr(response, 'text') and response.text:
+            clean_json = response.text.strip().replace("```json", "").replace("```", "")
+            return json.loads(clean_json)
+        else:
+            return {"error": "Empty response from AI"}
     except Exception as e:
-        return {"error": f"Failed to generate or parse AI output: {str(e)}", "raw": getattr(response, 'text', 'No response text')}
+        raw_text = getattr(response, 'text', 'No response text') if response else "No response object"
+        return {"error": f"Failed to generate or parse AI output: {str(e)}", "raw": raw_text}
+
+def explain_circuit(prompt: str, circuit_json: dict):
+    """
+    Generates a human-friendly explanation of the generated circuit.
+    """
+    if not client:
+        return "AI Explanation unavailable (API Key missing)."
+
+    explain_prompt = f"""
+    You are a Quantum Educator. Explain the following quantum circuit generated for the prompt: "{prompt}"
+    
+    Circuit Data:
+    {json.dumps(circuit_json)}
+    
+    Provide a concise, 2-3 sentence explanation of what this circuit does and why it was designed this way.
+    """
+    
+    try:
+        response = client.models.generate_content(
+            model="gemini-flash-latest",
+            contents=explain_prompt
+        )
+        return response.text.strip()
+    except:
+        return "Failed to generate explanation."
