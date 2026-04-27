@@ -9,7 +9,7 @@ load_dotenv()
 GENAI_API_KEY = os.getenv("GOOGLE_API_KEY")
 client = None
 if GENAI_API_KEY:
-    client = genai.Client(api_key=GENAI_API_KEY, http_options={'api_version': 'v1beta'})
+    client = genai.Client(api_key=GENAI_API_KEY, http_options={'api_version': 'v1'})
 
 SYSTEM_PROMPT = """
 You are a Quantum Circuit Architect. Your task is to translate natural language descriptions of quantum experiments into a structured JSON format that can be parsed into a Qiskit circuit.
