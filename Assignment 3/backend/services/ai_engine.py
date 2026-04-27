@@ -53,7 +53,7 @@ def generate_circuit_json(prompt: str):
     response = None
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-1.5-flash-latest",
             contents=f"{SYSTEM_PROMPT}\n\nUser Prompt: {prompt}"
         )
         
@@ -96,9 +96,9 @@ def explain_circuit(prompt: str, circuit_json: dict):
     
     try:
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-1.5-flash-latest",
             contents=explain_prompt
         )
         return response.text.strip()
-    except:
-        return "Failed to generate explanation."
+    except Exception as e:
+        return f"Failed to generate explanation: {str(e)}"
