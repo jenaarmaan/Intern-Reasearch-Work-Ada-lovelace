@@ -1,14 +1,15 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Configure Gemini
 GENAI_API_KEY = os.getenv("GOOGLE_API_KEY")
+client = None
 if GENAI_API_KEY:
-    genai.configure(api_key=GENAI_API_KEY)
+    client = genai.Client(api_key=GENAI_API_KEY)
 
 SYSTEM_PROMPT = """
 You are a Quantum Circuit Architect. Your task is to translate natural language descriptions of quantum experiments into a structured JSON format that can be parsed into a Qiskit circuit.
@@ -43,18 +44,20 @@ Output: {"qubits": 2, "gates": [{"type": "H", "target": 0}, {"type": "RX", "targ
 """
 
 def generate_circuit_json(prompt: str):
-    if not GENAI_API_KEY:
+    if not client:
         # Fallback for testing if API key is missing
         if "bell" in prompt.lower():
             return {"qubits": 2, "gates": [{"type": "H", "target": 0}, {"type": "CNOT", "control": 0, "target": 1}, {"type": "MEASURE", "target": 0}, {"type": "MEASURE", "target": 1}]}
         return {"error": "API Key not configured"}
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(f"{SYSTEM_PROMPT}\n\nUser Prompt: {prompt}")
-    
     try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=f"{SYSTEM_PROMPT}\n\nUser Prompt: {prompt}"
+        )
+        
         # Clean response text in case of accidental markdown
         clean_json = response.text.strip().replace("```json", "").replace("```", "")
         return json.loads(clean_json)
     except Exception as e:
-        return {"error": f"Failed to parse AI output: {str(e)}", "raw": response.text}
+        return {"error": f"Failed to generate or parse AI output: {str(e)}", "raw": getattr(response, 'text', 'No response text')}

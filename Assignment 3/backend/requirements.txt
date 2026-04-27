@@ -2,6 +2,6 @@ fastapi
 uvicorn[standard]
 qiskit
 qiskit-aer
-google-generativeai
+google-genai
 python-dotenv
 pydantic
