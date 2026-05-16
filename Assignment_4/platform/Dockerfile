@@ -1,5 +1,3 @@
-# Multi-stage build for a high-performance AI Platform
-
 # --- Stage 1: Build Frontend ---
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app/frontend
@@ -26,18 +24,13 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 # Copy backend code
 COPY backend/ ./backend/
 
-# Copy built frontend from Stage 1
-COPY --from=frontend-builder /app/frontend/.next ./.next
-COPY --from=frontend-builder /app/frontend/public ./public
-COPY --from=frontend-builder /app/frontend/package*.json ./
+# Copy built frontend (static export) from Stage 1
+COPY --from=frontend-builder /app/frontend/out ./frontend/out
 
-# Install only production node modules if needed for serving
-# Alternatively, we can use a dedicated Node server, but often Next.js 'standalone' is better.
-# For simplicity in this assignment, we'll assume a dual-process launch.
+# Setup static folders for backend
+RUN mkdir -p static/uploads static/outputs
 
-# Setup launch script
-COPY launch.py ./
+EXPOSE 7860
 
-EXPOSE 8000 3000
-
-CMD ["python", "launch.py"]
+# Run FastAPI backend on port 7860 (Hugging Face default)
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]

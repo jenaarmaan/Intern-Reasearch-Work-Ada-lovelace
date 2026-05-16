@@ -52,7 +52,16 @@ OUTPUT_DIR = "static/outputs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# Mount static folders for AI outputs
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Mount frontend (built with 'npm run build' / output: 'export')
+# Ensure the 'frontend/out' directory exists
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "../frontend/out")
+if os.path.exists(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+else:
+    print(f"Warning: Frontend directory {FRONTEND_DIR} not found. UI will not be served.")
 
 # Global variables for models (lazy loading)
 pipe = None

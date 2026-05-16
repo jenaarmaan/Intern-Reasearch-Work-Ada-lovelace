@@ -41,16 +41,16 @@ export default function Home() {
     formData.append("image", selectedFile);
 
     try {
-      // Assuming backend runs on 8000
-      const response = await fetch("http://localhost:8000/generate", {
+      // Use relative paths for deployment
+      const response = await fetch("/generate", {
         method: "POST",
         body: formData,
       });
 
       const data = await response.json();
       if (data.success) {
-        setResults(data.outputs.map((url: string) => `http://localhost:8000${url}`));
-        setConditioning(`http://localhost:8000${data.conditioning}`);
+        setResults(data.outputs.map((url: string) => `${url}`));
+        setConditioning(`${data.conditioning}`);
       } else {
         alert("Generation failed: " + data.detail);
       }
