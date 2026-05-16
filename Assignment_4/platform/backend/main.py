@@ -1,15 +1,40 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import torch
+import sys
 import os
 import uuid
-import cv2
 import numpy as np
 from PIL import Image
-from diffusers import StableDiffusionControlNetPipeline, ControlNetModel, UniPCMultistepScheduler
-from diffusers.utils import load_image
 import io
+
+# Debug: Print environment info
+print(f"Python: {sys.executable}")
+print(f"Path: {sys.path}")
+
+try:
+    import cv2
+    print(f"OpenCV version: {cv2.__version__}")
+except ImportError as e:
+    print(f"🚨 CRITICAL ERROR: Could not import cv2. Error: {e}")
+    # Force add user site packages just in case
+    import site
+    user_site = site.getusersitepackages()
+    if user_site not in sys.path:
+        sys.path.append(user_site)
+        print(f"Added user site: {user_site}")
+    try:
+        import cv2
+        print("Successfully imported cv2 after manual path injection.")
+    except ImportError:
+        print("Manual path injection failed.")
+
+try:
+    import torch
+    from diffusers import StableDiffusionControlNetPipeline, ControlNetModel, UniPCMultistepScheduler
+    from diffusers.utils import load_image
+except ImportError as e:
+    print(f"🚨 CRITICAL ERROR: Could not import AI libraries. Error: {e}")
 
 app = FastAPI()
 

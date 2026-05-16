@@ -36,8 +36,8 @@ export default function Home() {
     const formData = new FormData();
     formData.append("prompt", prompt);
     formData.append("negative_prompt", negative_prompt);
-    formData.append("control_type", control_type);
-    formData.append("num_samples", num_samples.toString());
+    formData.append("control_type", controlType);
+    formData.append("num_samples", numSamples.toString());
     formData.append("image", selectedFile);
 
     try {
@@ -107,7 +107,7 @@ export default function Home() {
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Control Mode</label>
               <select 
                 className="input-field" 
-                value={control_type}
+                value={controlType}
                 onChange={(e) => setControlType(e.target.value)}
               >
                 <option value="canny">Canny Edge</option>
@@ -121,7 +121,7 @@ export default function Home() {
                 className="input-field" 
                 min="1" 
                 max="4"
-                value={num_samples}
+                value={numSamples}
                 onChange={(e) => setNumSamples(parseInt(e.target.value))}
               />
             </div>

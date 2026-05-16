@@ -9,7 +9,7 @@ def launch_platform():
     # 1. Start Backend
     print("📡 Starting Backend Engine (Port 8000)...")
     backend_proc = subprocess.Popen(
-        [sys.executable, "backend/main.py"],
+        ["python", "backend/main.py"],
         cwd=os.path.dirname(os.path.abspath(__file__)),
         shell=True
     )
