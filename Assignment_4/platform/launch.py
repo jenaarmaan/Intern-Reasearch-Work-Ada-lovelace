@@ -4,10 +4,10 @@ import os
 import sys
 
 def launch_platform():
-    print("🚀 Starting Luminary AI Platform...")
+    print("Starting Luminary AI Platform...")
     
     # 1. Start Backend
-    print("📡 Starting Backend Engine (Port 8000)...")
+    print("Starting Backend Engine (Port 8000)...")
     backend_proc = subprocess.Popen(
         ["python", "backend/main.py"],
         cwd=os.path.dirname(os.path.abspath(__file__)),
@@ -15,14 +15,14 @@ def launch_platform():
     )
     
     # 2. Start Frontend
-    print("🎨 Starting Frontend Interface (Port 3000)...")
+    print("Starting Frontend Interface (Port 3000)...")
     frontend_proc = subprocess.Popen(
         ["npm", "run", "dev"],
         cwd=os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend"),
         shell=True
     )
     
-    print("\n✅ Platform is coming online!")
+    print("\nPlatform is coming online!")
     print("Backend: http://localhost:8000")
     print("Frontend: http://localhost:3000")
     
@@ -30,7 +30,7 @@ def launch_platform():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("\n🛑 Shutting down platform...")
+        print("\nShutting down platform...")
         backend_proc.terminate()
         frontend_proc.terminate()
 
