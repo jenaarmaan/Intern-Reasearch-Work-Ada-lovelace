@@ -1,0 +1,10 @@
+streamlit
+diffusers
+transformers
+accelerate
+torch
+torchvision
+opencv-python-headless
+pillow
+numpy
+xformers
