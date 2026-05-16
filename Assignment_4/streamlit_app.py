@@ -1,11 +1,9 @@
 import streamlit as st
-import torch
 import numpy as np
 from PIL import Image
 import cv2
-from diffusers import StableDiffusionControlNetPipeline, ControlNetModel, UniPCMultistepScheduler
-from transformers import pipeline as tf_pipeline
 import io
+import psutil
 
 # --- Page Config ---
 st.set_page_config(page_title="Luminary AI", page_icon="🌟", layout="wide")
@@ -29,11 +27,16 @@ st.title("🌟 Luminary AI")
 st.markdown("### Next-Generation ControlNet Platform")
 st.write("Unleash structural creativity with Stable Diffusion and ControlNet.")
 
-import psutil
 
 # --- Lazy Model Loading ---
 @st.cache_resource(show_spinner=False)
 def load_models(control_type):
+    try:
+        import torch
+        from diffusers import StableDiffusionControlNetPipeline, ControlNetModel, UniPCMultistepScheduler
+    except ImportError:
+        return "MOCK_MODE"
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     
     # Safety Check for Streamlit Cloud (1GB RAM limit)
@@ -85,8 +88,13 @@ with col2:
         if not uploaded_file:
             st.error("Please upload a source image first.")
         else:
-            if not torch.cuda.is_available():
-                st.warning("⚠️ Running on CPU. Image generation will be extremely slow. A GPU is recommended.")
+            try:
+                import torch
+                if not torch.cuda.is_available():
+                    st.warning("⚠️ Running on CPU. Image generation will be extremely slow. A GPU is recommended.")
+            except ImportError:
+                pass # Running in mock mode
+                
             with st.spinner("Processing Latent Space..."):
                 # Process image
                 image_bytes = uploaded_file.getvalue()
@@ -99,8 +107,14 @@ with col2:
                     processed = processed[:, :, None]
                     processed = np.concatenate([processed, processed, processed], axis=2)
                 else:
-                    depth_estimator = tf_pipeline("depth-estimation")
-                    processed = depth_estimator(input_img)['depth']
+                    try:
+                        from transformers import pipeline as tf_pipeline
+                        depth_estimator = tf_pipeline("depth-estimation")
+                        processed = depth_estimator(input_img)['depth']
+                    except ImportError:
+                        # Fallback for mock mode if transformers is missing
+                        processed = cv2.Canny(img_np, 100, 200)
+                        
                     processed = np.array(processed)
                     processed = processed[:, :, None]
                     processed = np.concatenate([processed, processed, processed], axis=2)
