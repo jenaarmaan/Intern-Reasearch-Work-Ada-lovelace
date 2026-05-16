@@ -29,10 +29,19 @@ st.title("🌟 Luminary AI")
 st.markdown("### Next-Generation ControlNet Platform")
 st.write("Unleash structural creativity with Stable Diffusion and ControlNet.")
 
+import psutil
+
 # --- Lazy Model Loading ---
 @st.cache_resource(show_spinner=False)
 def load_models(control_type):
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    
+    # Safety Check for Streamlit Cloud (1GB RAM limit)
+    virtual_memory = psutil.virtual_memory()
+    if virtual_memory.total < 4 * 1024 * 1024 * 1024 and device == "cpu":
+        # We are likely on Streamlit Cloud free tier. Loading SD will crash the server.
+        return "MOCK_MODE"
+
     controlnet_id = "lllyasviel/sd-controlnet-canny" if control_type == "canny" else "lllyasviel/sd-controlnet-depth"
     controlnet = ControlNetModel.from_pretrained(controlnet_id, torch_dtype=torch.float16 if device == "cuda" else torch.float32)
     pipe = StableDiffusionControlNetPipeline.from_pretrained(
@@ -102,16 +111,24 @@ with col2:
                 
                 # Generate
                 pipe = load_models(control_type)
-                device = "cuda" if torch.cuda.is_available() else "cpu"
-                generator = torch.Generator(device=device).manual_seed(42)
                 
-                results = pipe(
-                    prompt=[prompt] * num_samples,
-                    negative_prompt=[negative_prompt] * num_samples,
-                    image=conditioning_image,
-                    num_inference_steps=30,
-                    generator=generator
-                ).images
+                if pipe == "MOCK_MODE":
+                    import time
+                    st.warning("Running in Cloud Mock Mode due to low server memory. This is a simulation.")
+                    time.sleep(3)
+                    # Create a blank placeholder image instead of crashing
+                    results = [Image.new('RGB', (512, 512), color = (73, 109, 137))] * num_samples
+                else:
+                    device = "cuda" if torch.cuda.is_available() else "cpu"
+                    generator = torch.Generator(device=device).manual_seed(42)
+                    
+                    results = pipe(
+                        prompt=[prompt] * num_samples,
+                        negative_prompt=[negative_prompt] * num_samples,
+                        image=conditioning_image,
+                        num_inference_steps=30,
+                        generator=generator
+                    ).images
                 
                 st.success("Synthesis Complete!")
                 cols = st.columns(len(results))
