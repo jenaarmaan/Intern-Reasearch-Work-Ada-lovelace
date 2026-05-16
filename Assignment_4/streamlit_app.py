@@ -32,15 +32,20 @@ st.write("Unleash structural creativity with Stable Diffusion and ControlNet.")
 # --- Lazy Model Loading ---
 @st.cache_resource(show_spinner=False)
 def load_models(control_type):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     controlnet_id = "lllyasviel/sd-controlnet-canny" if control_type == "canny" else "lllyasviel/sd-controlnet-depth"
-    controlnet = ControlNetModel.from_pretrained(controlnet_id, torch_dtype=torch.float16)
+    controlnet = ControlNetModel.from_pretrained(controlnet_id, torch_dtype=torch.float16 if device == "cuda" else torch.float32)
     pipe = StableDiffusionControlNetPipeline.from_pretrained(
         "runwayml/stable-diffusion-v1-5", 
         controlnet=controlnet, 
-        torch_dtype=torch.float16
-    ).to("cuda")
+        torch_dtype=torch.float16 if device == "cuda" else torch.float32
+    ).to(device)
     pipe.scheduler = UniPCMultistepScheduler.from_config(pipe.scheduler.config)
-    pipe.enable_xformers_memory_efficient_attention()
+    if device == "cuda":
+        try:
+            pipe.enable_xformers_memory_efficient_attention()
+        except Exception:
+            pass
     return pipe
 
 # --- UI Layout ---
@@ -70,9 +75,9 @@ with col2:
     if generate_btn:
         if not uploaded_file:
             st.error("Please upload a source image first.")
-        elif not torch.cuda.is_available():
-            st.error("CUDA GPU is required but not available on this system.")
         else:
+            if not torch.cuda.is_available():
+                st.warning("⚠️ Running on CPU. Image generation will be extremely slow. A GPU is recommended.")
             with st.spinner("Processing Latent Space..."):
                 # Process image
                 image_bytes = uploaded_file.getvalue()
@@ -97,7 +102,8 @@ with col2:
                 
                 # Generate
                 pipe = load_models(control_type)
-                generator = torch.Generator(device="cuda").manual_seed(42)
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+                generator = torch.Generator(device=device).manual_seed(42)
                 
                 results = pipe(
                     prompt=[prompt] * num_samples,
